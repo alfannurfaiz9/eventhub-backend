@@ -1,0 +1,127 @@
+package service
+
+import (
+	"context"
+	"errors"
+
+	"github.com/alfannurfaiz9/eventhub-backend.git/internal/dto"
+	custom_error "github.com/alfannurfaiz9/eventhub-backend.git/internal/error"
+	"github.com/alfannurfaiz9/eventhub-backend.git/internal/model"
+	"github.com/alfannurfaiz9/eventhub-backend.git/internal/repo"
+	"github.com/alfannurfaiz9/eventhub-backend.git/pkg"
+	"github.com/jackc/pgx/v5"
+)
+
+type AuthService struct {
+	ar *repo.AuthRepo
+}
+
+func NewAuthService(ar *repo.AuthRepo) *AuthService {
+	return &AuthService{
+		ar: ar,
+	}
+}
+
+func (a *AuthService) Register(ctx context.Context, body dto.User) error {
+	if len(body.Email) < 6 || len(body.Password) < 6 {
+		return custom_error.RegisterInvalidLength
+	}
+
+	_, err := a.ar.FindUser(ctx, body.Email)
+	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
+		return err
+	}
+
+	if err == nil {
+		return custom_error.RegisterAlreadyExist
+	}
+
+	hash := pkg.NewRecommendHashConfig()
+	hashedPass := hash.GenerateHash(body.Password)
+
+	if err := a.ar.Register(ctx, model.User{
+		FullName: body.FullName,
+		Email:    body.Email,
+		Password: hashedPass,
+		ImgUrl:   body.ImgUrl,
+		Address:  body.Address,
+		Bio:      body.Bio,
+		Status:   body.Status,
+		Role:     body.Role,
+	}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (a *AuthService) Login(ctx context.Context, body dto.User) (string, error) {
+	if len(body.Email) == 0 || len(body.Password) == 0 {
+		return "", custom_error.EmptyLoginField
+	}
+
+	user, err := a.ar.FindUser(ctx, body.Email)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return "", custom_error.LoginInvalidEmailOrPassword
+		}
+		return "", err
+	}
+
+	if err := pkg.CompareHash(body.Password, user.Password); err != nil {
+		return "", custom_error.LoginInvalidEmailOrPassword
+	}
+
+	claims := pkg.NewJWTClaims(user.Id, user.Role)
+	return claims.GenToken()
+}
+
+func (a *AuthService) GetUserProfile(ctx context.Context, id int) (dto.User, error) {
+	result, err := a.ar.GetUserProfile(ctx, id)
+
+	data := dto.User{
+		FullName: result.FullName,
+		Email:    result.Email,
+		ImgUrl:   result.ImgUrl,
+		Address:  result.Address,
+		Bio:      result.Bio,
+		Role:     result.Role,
+	}
+
+	return data, err
+}
+
+func (a *AuthService) ChangeUserPassword(ctx context.Context, body dto.User, id int) error {
+	if len(body.Password) < 6 {
+		return custom_error.RegisterInvalidLength
+	}
+
+	hash := pkg.NewRecommendHashConfig()
+	hashedPass := hash.GenerateHash(body.Password)
+
+	if err := a.ar.ChangeUserPassword(ctx, model.User{Password: hashedPass}, id); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (a *AuthService) GetMyEvent(ctx context.Context, id int) ([]dto.EventList, error) {
+	result, err := a.ar.GetMyEvent(ctx, id)
+
+	data := make([]dto.EventList, 0, len(result))
+
+	for _, v := range result {
+		data = append(data, dto.EventList{
+			Title:         v.Event.Title,
+			ImgUrl:        v.Event.ImgUrl,
+			Category:      v.Category.Name,
+			StartAt:       v.Event.StartAt,
+			Location:      v.Location.Name,
+			TotalAttendee: v.TotalAttendee,
+			Capacity:      v.Event.Capacity,
+		})
+	}
+
+	return data, err
+}
