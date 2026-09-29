@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"github.com/alfannurfaiz9/eventhub-backend.git/internal/dto"
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/model"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -114,4 +115,59 @@ func (a *AuthRepo) GetMyEvent(ctx context.Context, id int) ([]model.EventList, e
 	}
 
 	return events, nil
+}
+
+func (a *AuthRepo) GetNotification(ctx context.Context, id int) ([]model.Notification, error) {
+	sql := `
+	SELECT notifications.title, notifications.description, notifications.created_at
+	FROM notifications
+	LEFT JOIN users ON users.id = notifications.user_id
+	WHERE users.id = $1`
+	args := []any{id}
+
+	rows, err := a.db.Query(ctx, sql, args...)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var notifications []model.Notification
+
+	for rows.Next() {
+		var notification model.Notification
+
+		if err := rows.Scan(
+			&notification.Title,
+			&notification.Description,
+			&notification.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+
+		notifications = append(notifications, notification)
+	}
+
+	return notifications, nil
+}
+
+func (a *AuthRepo) GetOrganizerDashboard(ctx context.Context, id int) (dto.OrganizerDashboard, error) {
+	sql := `
+	SELECT COUNT(e.id), COUNT(ue.event_id), CONCAT(COUNT(e.id) * 100 / SUM(e.capacity), '%')
+	FROM events e
+	LEFT JOIN users u ON u.id = e.organizer_id
+	LEFT JOIN user_event ue ON ue.event_id = e.id
+	WHERE u.id = $1`
+	args := []any{id}
+
+	var data dto.OrganizerDashboard
+	err := a.db.QueryRow(ctx, sql, args...).Scan(
+		&data.TotalEvent,
+		&data.TotalAttendee,
+		&data.AvgFillRate)
+
+	if err != nil {
+		return dto.OrganizerDashboard{}, err
+	}
+
+	return data, nil
 }

@@ -125,3 +125,47 @@ func (a *AuthService) GetMyEvent(ctx context.Context, id int) ([]dto.EventList, 
 
 	return data, err
 }
+
+func (a *AuthService) GetNotification(ctx context.Context, id int) ([]dto.Notification, error) {
+	result, err := a.ar.GetNotification(ctx, id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if len(result) == 0 {
+		return nil, custom_error.NotificationNotFound
+	}
+
+	data := make([]dto.Notification, 0, len(result))
+
+	for _, v := range result {
+		data = append(data, dto.Notification{
+			Title:       v.Title,
+			Description: v.Description,
+			CreatedAt:   v.CreatedAt,
+		})
+	}
+
+	return data, nil
+}
+
+func (a *AuthService) GetOrganizerDashboard(ctx context.Context, id int) (dto.OrganizerDashboard, error) {
+	result, err := a.ar.GetOrganizerDashboard(ctx, id)
+
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return dto.OrganizerDashboard{}, custom_error.EventNotFound
+		}
+
+		return dto.OrganizerDashboard{}, err
+	}
+
+	data := dto.OrganizerDashboard{
+		TotalEvent:    result.TotalAttendee,
+		TotalAttendee: result.TotalAttendee,
+		AvgFillRate:   result.AvgFillRate,
+	}
+
+	return data, nil
+}
