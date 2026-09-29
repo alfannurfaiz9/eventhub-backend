@@ -18,4 +18,5 @@ func initUserRouter(router *gin.Engine, db *pgxpool.Pool) {
 
 	r.GET("profile", middleware.CheckToken, ac.GetUserProfile)
 	r.GET("event", middleware.CheckToken, ac.GetMyEvent)
+	r.GET("notification", middleware.CheckToken, ac.GetNotification)
 }
