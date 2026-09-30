@@ -295,3 +295,25 @@ func (a *AuthController) GetAdminDashboard(ctx *gin.Context) {
 		Message: "successfully get admin dashboard",
 	})
 }
+
+func (a *AuthController) GetAllUser(ctx *gin.Context) {
+	result, err := a.as.GetAllUser(ctx.Request.Context())
+
+	if err != nil {
+		log.Println(err.Error())
+
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
+			Success: false,
+			Data:    result,
+			Message: err.Error(),
+		})
+
+		return
+	}
+
+	ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
+		Success: true,
+		Data:    result,
+		Message: "successfully get all users",
+	})
+}

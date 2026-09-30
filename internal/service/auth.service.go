@@ -193,3 +193,21 @@ func (a *AuthService) GetAdminDashboard(ctx context.Context) (dto.AdminDashboard
 
 	return data, err
 }
+
+func (a *AuthService) GetAllUser(ctx context.Context) ([]dto.UserList, error) {
+	result, err := a.ar.GetAllUser(ctx)
+
+	userlist := make([]dto.UserList, 0, len(result))
+
+	for _, v := range result {
+		userlist = append(userlist, dto.UserList{
+			FullName:  v.FullName,
+			Email:     v.Email,
+			Role:      v.Role,
+			Status:    v.Status,
+			CreatedAt: v.CreatedAt,
+		})
+	}
+
+	return userlist, err
+}

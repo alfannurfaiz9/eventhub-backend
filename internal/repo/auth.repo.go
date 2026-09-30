@@ -230,3 +230,31 @@ func (a *AuthRepo) GetAdminDashboard(ctx context.Context) (model.AdminDashboard,
 
 	return data, nil
 }
+
+func (a *AuthRepo) GetAllUser(ctx context.Context) ([]model.User, error) {
+	sql := `SELECT full_name, email, role, status, created_at FROM users`
+
+	rows, err := a.db.Query(ctx, sql)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var users []model.User
+	for rows.Next() {
+		var user model.User
+		if err := rows.Scan(
+			&user.FullName,
+			&user.Email,
+			&user.Role,
+			&user.Status,
+			&user.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+
+		users = append(users, user)
+	}
+
+	return users, nil
+}

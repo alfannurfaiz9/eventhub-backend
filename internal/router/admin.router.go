@@ -10,11 +10,12 @@ import (
 )
 
 func initAdminRouter(router *gin.Engine, db *pgxpool.Pool) {
-	r := router.Group("/admin")
+	r := router.Group("/admin/dashboard")
 
 	ar := repo.NewAuthRepo(db)
 	as := service.NewAuthService(ar)
 	ac := controller.NewAuthController(as)
 
-	r.GET("dashboard", middleware.CheckToken, ac.GetAdminDashboard)
+	r.GET("", middleware.CheckToken, ac.GetAdminDashboard)
+	r.GET("users", middleware.CheckToken, ac.GetAllUser)
 }
