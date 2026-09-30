@@ -65,14 +65,25 @@ func (e *EventController) GetEventDetail(ctx *gin.Context) {
 	})
 }
 
+// JoinEvent
+//
+// @Summary			Join to event
+// @Description		Join to specified event
+// @Tags			events
+// @Produce			json
+// @Router			/events/join		[post]
+// @Param			data	body		dto.JoinEvent	true	"body to join event"
+// @Security		BearerToken
+// @Success			200		{object}	dto.Response
+// @Failure			500		{object}	dto.ErrorResponse
 func (e *EventController) JoinEvent(ctx *gin.Context) {
 	token, _ := ctx.Get("token")
 	claims, _ := token.(pkg.JWTClaims)
 
-	var body dto.UserEvent
+	var body dto.JoinEvent
 	if err := ctx.ShouldBindWith(&body, binding.JSON); err != nil {
 		log.Println(err.Error())
-		ctx.JSON(http.StatusInternalServerError, dto.Response{
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
 			Message: err.Error(),
 		})
@@ -84,7 +95,7 @@ func (e *EventController) JoinEvent(ctx *gin.Context) {
 
 	if err != nil {
 		log.Println(err.Error())
-		ctx.JSON(http.StatusInternalServerError, dto.Response{
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
 			Message: err.Error(),
 		})
@@ -121,7 +132,7 @@ func (e *EventController) GetUpcomingEvent(ctx *gin.Context) {
 func (e *EventController) LeaveEvent(ctx *gin.Context) {
 	userId, _ := ctx.Get("id")
 
-	var body dto.UserEvent
+	var body dto.JoinEvent
 	if err := ctx.ShouldBindWith(&body, binding.JSON); err != nil {
 		log.Println(err.Error())
 		ctx.JSON(http.StatusInternalServerError, dto.Response{

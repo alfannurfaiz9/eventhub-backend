@@ -17,4 +17,5 @@ func initOrganizerRouter(router *gin.Engine, db *pgxpool.Pool) {
 	ac := controller.NewAuthController(as)
 
 	r.GET("dashboard", middleware.CheckToken, ac.GetOrganizerDashboard)
+	r.GET("events", middleware.CheckToken, ac.GetOrganizerEvent)
 }

@@ -7,7 +7,7 @@ import (
 type Event struct {
 	Id          int       `db:"id"`
 	Title       string    `db:"title"`
-	ImgUrl      string    `db:"img_url"`
+	ImgUrl      *string   `db:"img_url"`
 	Description string    `db:"description"`
 	StartAt     time.Time `db:"start_at"`
 	EndAt       time.Time `db:"end_at"`
@@ -51,6 +51,7 @@ type EventList struct {
 	EventCategory
 	Community
 	Location
+	User
 	TotalAttendee int `db:"total_attendee"`
 }
 

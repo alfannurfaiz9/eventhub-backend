@@ -53,7 +53,7 @@ func (e *EventService) GetEventDetail(ctx context.Context, id string) (dto.Event
 
 	data := dto.EventDetail{
 		Title:         result.Event.Title,
-		ImgUrl:        result.Event.ImgUrl,
+		ImgUrl:        *result.Event.ImgUrl,
 		Description:   result.Event.Description,
 		Category:      result.Category.Name,
 		StartAt:       result.Event.StartAt,
@@ -67,7 +67,7 @@ func (e *EventService) GetEventDetail(ctx context.Context, id string) (dto.Event
 	return data, nil
 }
 
-func (e *EventService) JoinEvent(ctx context.Context, userId int, body dto.UserEvent) error {
+func (e *EventService) JoinEvent(ctx context.Context, userId int, body dto.JoinEvent) error {
 	if err := e.er.JoinEvent(ctx, userId, model.UserEvent{EventId: body.EventId}); err != nil {
 		return err
 	}
@@ -95,7 +95,7 @@ func (e *EventService) GetUpcomingEvent(ctx context.Context) ([]dto.EventList, e
 	return data, err
 }
 
-func (e *EventService) LeaveEvent(ctx context.Context, user_id int, body dto.UserEvent) error {
+func (e *EventService) LeaveEvent(ctx context.Context, user_id int, body dto.JoinEvent) error {
 	if err := e.er.LeaveEvent(ctx, user_id, model.UserEvent{EventId: body.EventId}); err != nil {
 		return err
 	}

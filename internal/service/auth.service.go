@@ -22,7 +22,7 @@ func NewAuthService(ar *repo.AuthRepo) *AuthService {
 	}
 }
 
-func (a *AuthService) Register(ctx context.Context, body dto.User) error {
+func (a *AuthService) Register(ctx context.Context, body dto.Register) error {
 	if len(body.Email) < 6 || len(body.Password) < 6 {
 		return custom_error.RegisterInvalidLength
 	}
@@ -43,11 +43,6 @@ func (a *AuthService) Register(ctx context.Context, body dto.User) error {
 		FullName: body.FullName,
 		Email:    body.Email,
 		Password: hashedPass,
-		ImgUrl:   body.ImgUrl,
-		Address:  body.Address,
-		Bio:      body.Bio,
-		Status:   body.Status,
-		Role:     body.Role,
 	}); err != nil {
 		return err
 	}
@@ -55,7 +50,7 @@ func (a *AuthService) Register(ctx context.Context, body dto.User) error {
 	return nil
 }
 
-func (a *AuthService) Login(ctx context.Context, body dto.User) (string, error) {
+func (a *AuthService) Login(ctx context.Context, body dto.Login) (string, error) {
 	if len(body.Email) == 0 || len(body.Password) == 0 {
 		return "", custom_error.EmptyLoginField
 	}
@@ -115,11 +110,10 @@ func (a *AuthService) GetMyEvent(ctx context.Context, id int) ([]dto.EventList, 
 		data = append(data, dto.EventList{
 			Title:         v.Event.Title,
 			ImgUrl:        v.Event.ImgUrl,
-			Category:      v.Category.Name,
 			StartAt:       v.Event.StartAt,
 			Location:      v.Location.Name,
-			TotalAttendee: v.TotalAttendee,
 			Capacity:      v.Event.Capacity,
+			TotalAttendee: v.TotalAttendee,
 		})
 	}
 
@@ -168,4 +162,29 @@ func (a *AuthService) GetOrganizerDashboard(ctx context.Context, id int) (dto.Or
 	}
 
 	return data, nil
+}
+
+func (a *AuthService) GetOrganizerEvent(ctx context.Context, id int) ([]dto.EventList, error) {
+	result, err := a.ar.GetOrganizerEvent(ctx, id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if len(result) == 0 {
+		return nil, custom_error.EventNotFound
+	}
+
+	events := make([]dto.EventList, 0, len(result))
+	for _, v := range result {
+		events = append(events, dto.EventList{
+			Title:         v.Event.Title,
+			ImgUrl:        v.Event.ImgUrl,
+			StartAt:       v.Event.StartAt,
+			Location:      v.Location.Name,
+			TotalAttendee: v.TotalAttendee,
+		})
+	}
+
+	return events, nil
 }

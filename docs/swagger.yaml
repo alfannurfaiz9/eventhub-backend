@@ -1,0 +1,142 @@
+basePath: /
+definitions:
+  dto.ErrorResponse:
+    properties:
+      data: {}
+      message:
+        example: error
+        type: string
+      success:
+        example: false
+        type: boolean
+    type: object
+  dto.JoinEvent:
+    properties:
+      event_id:
+        type: integer
+    type: object
+  dto.Login:
+    properties:
+      email:
+        example: example@gmail.com
+        type: string
+      password:
+        example: examplepass
+        type: string
+    type: object
+  dto.Register:
+    properties:
+      email:
+        example: example@gmail.com
+        type: string
+      full_name:
+        example: marianus example
+        type: string
+      password:
+        example: password
+        type: string
+    type: object
+  dto.Response:
+    properties:
+      data: {}
+      message:
+        example: success
+        type: string
+      success:
+        example: true
+        type: boolean
+    type: object
+host: localhost:9000
+info:
+  contact: {}
+  description: API docs for eventhub
+  title: Eventhub Backend
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login user
+      parameters:
+      - description: body to login
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Login'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Login user
+      tags:
+      - auth
+  /auth/register:
+    post:
+      description: Create new user
+      parameters:
+      - description: body to register
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Register'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Create new user
+      tags:
+      - auth
+  /events/join:
+    post:
+      description: Join to specified event
+      parameters:
+      - description: body to join event
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.JoinEvent'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerToken: []
+      summary: Join to event
+      tags:
+      - events
+securityDefinitions:
+  BearerToken:
+    description: Bearer Token used as identity for accessing backend
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

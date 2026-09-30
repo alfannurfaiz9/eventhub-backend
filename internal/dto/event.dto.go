@@ -4,14 +4,14 @@ import "time"
 
 type Event struct {
 	Title    string    `json:"title"`
-	ImgUrl   string    `json:"img_url"`
+	ImgUrl   *string   `json:"img_url"`
 	Category string    `json:"category"`
 	StartAt  time.Time `json:"start_at"`
 }
 
 type EventList struct {
 	Title         string    `json:"title"`
-	ImgUrl        string    `json:"img_url"`
+	ImgUrl        *string   `json:"img_url"`
 	Category      string    `json:"category"`
 	StartAt       time.Time `json:"start_at"`
 	Location      string    `json:"location"`
@@ -32,7 +32,6 @@ type EventDetail struct {
 	Community     string    `json:"community"`
 }
 
-type UserEvent struct {
-	UserId  int `json:"user_id"`
+type JoinEvent struct {
 	EventId int `json:"event_id"`
 }
