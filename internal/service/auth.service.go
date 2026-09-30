@@ -147,21 +147,13 @@ func (a *AuthService) GetNotification(ctx context.Context, id int) ([]dto.Notifi
 func (a *AuthService) GetOrganizerDashboard(ctx context.Context, id int) (dto.OrganizerDashboard, error) {
 	result, err := a.ar.GetOrganizerDashboard(ctx, id)
 
-	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return dto.OrganizerDashboard{}, custom_error.EventNotFound
-		}
-
-		return dto.OrganizerDashboard{}, err
-	}
-
 	data := dto.OrganizerDashboard{
 		TotalEvent:    result.TotalAttendee,
 		TotalAttendee: result.TotalAttendee,
 		AvgFillRate:   result.AvgFillRate,
 	}
 
-	return data, nil
+	return data, err
 }
 
 func (a *AuthService) GetOrganizerEvent(ctx context.Context, id int) ([]dto.EventList, error) {
@@ -187,4 +179,17 @@ func (a *AuthService) GetOrganizerEvent(ctx context.Context, id int) ([]dto.Even
 	}
 
 	return events, nil
+}
+
+func (a *AuthService) GetAdminDashboard(ctx context.Context) (dto.AdminDashboard, error) {
+	result, err := a.ar.GetAdminDashboard(ctx)
+
+	data := dto.AdminDashboard{
+		TotalUser:      result.TotalUser,
+		TotalEvent:     result.TotalEvent,
+		TotalCommunity: result.TotalCommunity,
+		AvgFillRate:    result.AvgFillRate,
+	}
+
+	return data, err
 }

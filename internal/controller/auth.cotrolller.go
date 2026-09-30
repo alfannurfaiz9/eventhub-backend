@@ -11,7 +11,6 @@ import (
 	"github.com/alfannurfaiz9/eventhub-backend.git/pkg"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"github.com/jackc/pgx/v5"
 )
 
 type AuthController struct {
@@ -230,14 +229,6 @@ func (a *AuthController) GetOrganizerDashboard(ctx *gin.Context) {
 
 	if err != nil {
 		log.Println(err.Error())
-		if errors.Is(err, pgx.ErrNoRows) {
-			ctx.JSON(http.StatusForbidden, dto.Response{
-				Success: false,
-				Message: err.Error(),
-			})
-
-			return
-		}
 
 		ctx.JSON(http.StatusInternalServerError, dto.Response{
 			Success: false,
@@ -256,7 +247,7 @@ func (a *AuthController) GetOrganizerDashboard(ctx *gin.Context) {
 
 func (a *AuthController) GetOrganizerEvent(ctx *gin.Context) {
 	id, _ := ctx.Get("id")
-	result, err := a.as.GetOrganizerEvent(ctx, id.(int))
+	result, err := a.as.GetOrganizerEvent(ctx.Request.Context(), id.(int))
 
 	if err != nil {
 		log.Println(err.Error())
@@ -281,5 +272,26 @@ func (a *AuthController) GetOrganizerEvent(ctx *gin.Context) {
 		Success: true,
 		Data:    result,
 		Message: "successfully get event",
+	})
+}
+
+func (a *AuthController) GetAdminDashboard(ctx *gin.Context) {
+	result, err := a.as.GetAdminDashboard(ctx.Request.Context())
+
+	if err != nil {
+		log.Println(err.Error())
+
+		ctx.JSON(http.StatusInternalServerError, dto.Response{
+			Success: true,
+			Message: err.Error(),
+		})
+
+		return
+	}
+
+	ctx.JSON(http.StatusOK, dto.Response{
+		Success: true,
+		Data:    result,
+		Message: "successfully get admin dashboard",
 	})
 }

@@ -17,4 +17,5 @@ func InitMainRouter(router *gin.Engine, db *pgxpool.Pool) {
 	initUserRouter(router, db)
 	initTestimonyRouter(router, db)
 	initOrganizerRouter(router, db)
+	initAdminRouter(router, db)
 }

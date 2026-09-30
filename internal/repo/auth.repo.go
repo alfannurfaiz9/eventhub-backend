@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 
-	"github.com/alfannurfaiz9/eventhub-backend.git/internal/dto"
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/model"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -150,7 +149,7 @@ func (a *AuthRepo) GetNotification(ctx context.Context, id int) ([]model.Notific
 	return notifications, nil
 }
 
-func (a *AuthRepo) GetOrganizerDashboard(ctx context.Context, id int) (dto.OrganizerDashboard, error) {
+func (a *AuthRepo) GetOrganizerDashboard(ctx context.Context, id int) (model.OrganizerDashboard, error) {
 	sql := `
 	SELECT COUNT(e.id), COUNT(ue.event_id), CONCAT(COUNT(e.id) * 100 / SUM(e.capacity), '%')
 	FROM events e
@@ -159,14 +158,14 @@ func (a *AuthRepo) GetOrganizerDashboard(ctx context.Context, id int) (dto.Organ
 	WHERE u.id = $1`
 	args := []any{id}
 
-	var data dto.OrganizerDashboard
+	var data model.OrganizerDashboard
 	err := a.db.QueryRow(ctx, sql, args...).Scan(
 		&data.TotalEvent,
 		&data.TotalAttendee,
 		&data.AvgFillRate)
 
 	if err != nil {
-		return dto.OrganizerDashboard{}, err
+		return model.OrganizerDashboard{}, err
 	}
 
 	return data, nil
@@ -207,4 +206,27 @@ func (a *AuthRepo) GetOrganizerEvent(ctx context.Context, id int) ([]model.Event
 	}
 
 	return events, err
+}
+
+func (a *AuthRepo) GetAdminDashboard(ctx context.Context) (model.AdminDashboard, error) {
+	sql := `
+	SELECT total_users, total_events, total_communities, CONCAT((total_attendee * 100) / total_capacaity, '%')
+	FROM 
+		(SELECT COUNT(users.id) AS "total_users" FROM users), 
+		(SELECT COUNT(events.id) AS "total_events", SUM(events.capacity) AS "total_capacaity" FROM events),
+		(SELECT COUNT(communities.id) AS "total_communities" FROM communities),
+		(SELECT COUNT(user_event.user_id) AS "total_attendee"  FROM user_event)`
+
+	var data model.AdminDashboard
+	err := a.db.QueryRow(ctx, sql).Scan(
+		&data.TotalUser,
+		&data.TotalEvent,
+		&data.TotalCommunity,
+		&data.AvgFillRate)
+
+	if err != nil {
+		return model.AdminDashboard{}, err
+	}
+
+	return data, nil
 }
