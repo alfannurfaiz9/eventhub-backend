@@ -17,16 +17,18 @@ type TestimonyController struct {
 }
 
 func NewTestimonyController(ts *service.TestimonyService) *TestimonyController {
-	return &TestimonyController{ts: ts}
+	return &TestimonyController{
+		ts: ts,
+	}
 }
 
 func (t *TestimonyController) SetTestimony(ctx *gin.Context) {
 	var body dto.Testimony
 
 	if err := ctx.ShouldBindWith(&body, binding.JSON); err != nil {
-		ctx.JSON(http.StatusInternalServerError, dto.Response{
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
-			Message: err.Error(),
+			Message: "internal server error",
 		})
 
 		return
@@ -36,21 +38,21 @@ func (t *TestimonyController) SetTestimony(ctx *gin.Context) {
 	if err := t.ts.SetTestimony(ctx.Request.Context(), userId.(int), body); err != nil {
 		log.Println(err.Error())
 		if errors.Is(err, custom_error.TestimonyEmptyField) {
-			ctx.JSON(http.StatusNoContent, dto.Response{
+			ctx.JSON(http.StatusNoContent, dto.ErrorResponse{
 				Success: false,
 				Message: err.Error(),
 			})
 		}
 
-		ctx.JSON(http.StatusInternalServerError, dto.Response{
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
-			Message: err.Error(),
+			Message: "internal server error",
 		})
 
 		return
 	}
 
-	ctx.JSON(http.StatusInternalServerError, dto.Response{
+	ctx.JSON(http.StatusCreated, dto.Response{
 		Success: true,
 		Message: "testimony successfully created",
 	})
@@ -62,9 +64,9 @@ func (t *TestimonyController) GetTestimony(ctx *gin.Context) {
 	if err != nil {
 		log.Println(err.Error())
 
-		ctx.JSON(http.StatusInternalServerError, dto.Response{
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
-			Message: err.Error(),
+			Message: "internal server error",
 		})
 
 		return
@@ -73,6 +75,6 @@ func (t *TestimonyController) GetTestimony(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, dto.Response{
 		Success: true,
 		Data:    result,
-		Message: "success",
+		Message: "successfully get testimony",
 	})
 }

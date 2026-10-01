@@ -1,11 +1,13 @@
 package controller
 
 import (
+	"errors"
 	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/dto"
+	custom_error "github.com/alfannurfaiz9/eventhub-backend.git/internal/error"
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/service"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -21,14 +23,27 @@ func NewCommunityController(cs *service.CommunityService) *CommunityController {
 	}
 }
 
+// GetCommunities
+//
+// @Summary			Get all community
+// @Description		Get all community with search and filter
+// @Tags			communities
+// @Produce			json
+//
+//	@Param        	category    query     string  false  "name category by category"  Format(category)
+//
+// @Router			/communities	[get]
+// @Success			200		{object}	dto.Response
+// @Failure			500		{object}	dto.ErrorResponse
 func (c *CommunityController) GetCommunities(ctx *gin.Context) {
 	category := ctx.Query("category")
 	result, err := c.cs.GetCommunities(ctx.Request.Context(), category)
 
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, dto.Response{
+		log.Println(err.Error())
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
-			Message: err.Error(),
+			Message: "internal server error",
 		})
 
 		return
@@ -41,6 +56,17 @@ func (c *CommunityController) GetCommunities(ctx *gin.Context) {
 	})
 }
 
+// GetCommunityDetail
+//
+// @Summary			Get community detail
+// @Description		Get community detail
+// @Tags			communities
+// @Produce			json
+// @Router			/communities/{id}	[get]
+// @Param        	id   path      int  true  "Community ID"
+// @Success			200		{object}	dto.Response
+// @Failure			404		{object}	dto.ErrorResponse
+// @Failure			500		{object}	dto.ErrorResponse
 func (c *CommunityController) GetCommunityDetail(ctx *gin.Context) {
 	param := ctx.Param("id")
 	id, _ := strconv.Atoi(param)
@@ -48,21 +74,39 @@ func (c *CommunityController) GetCommunityDetail(ctx *gin.Context) {
 
 	if err != nil {
 		log.Println(err.Error())
-		ctx.JSON(http.StatusInternalServerError, dto.Response{
+		if errors.Is(err, custom_error.CommunityNotFound) {
+			ctx.JSON(http.StatusNotFound, dto.ErrorResponse{
+				Success: false,
+				Message: err.Error(),
+			})
+
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
-			Message: err.Error(),
+			Message: "internal server error",
 		})
 
 		return
 	}
 
-	ctx.JSON(http.StatusInternalServerError, dto.Response{
+	ctx.JSON(http.StatusOK, dto.Response{
 		Success: true,
 		Data:    result,
-		Message: "success",
+		Message: "successfully get community detail",
 	})
 }
 
+// GetCommunityEvent
+//
+// @Summary			Get community event
+// @Description		Get community event
+// @Tags			communities
+// @Produce			json
+// @Router			/communities/{id}/events	[get]
+// @Param        	id   path      int  true  "Community ID"
+// @Success			200		{object}	dto.Response
+// @Failure			500		{object}	dto.ErrorResponse
 func (c *CommunityController) GetCommunityEvent(ctx *gin.Context) {
 	param := ctx.Param("id")
 	id, _ := strconv.Atoi(param)
@@ -70,30 +114,40 @@ func (c *CommunityController) GetCommunityEvent(ctx *gin.Context) {
 
 	if err != nil {
 		log.Println(err.Error())
-		ctx.JSON(http.StatusInternalServerError, dto.Response{
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
-			Message: err.Error(),
+			Message: "internal server error",
 		})
 
 		return
 	}
 
-	ctx.JSON(http.StatusInternalServerError, dto.Response{
+	ctx.JSON(http.StatusOK, dto.Response{
 		Success: true,
 		Data:    result,
-		Message: "success",
+		Message: "successfully get event",
 	})
 }
 
+// GetCommunityMember
+//
+// @Summary			Get community member
+// @Description		Get community member
+// @Tags			communities
+// @Produce			json
+// @Param        	id   path      int  true  "Community ID"
+// @Router			/communities/{id}/members	[get]
+// @Success			200		{object}	dto.Response
+// @Failure			500		{object}	dto.ErrorResponse
 func (c *CommunityController) GetCommunityMember(ctx *gin.Context) {
 	param := ctx.Param("id")
 	id, _ := strconv.Atoi(param)
 	result, err := c.cs.GetCommunityMember(ctx.Request.Context(), id)
 
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, dto.Response{
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
-			Message: err.Error(),
+			Message: "internal server error",
 		})
 
 		return
@@ -102,17 +156,26 @@ func (c *CommunityController) GetCommunityMember(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, dto.Response{
 		Success: true,
 		Data:    result,
-		Message: "success",
+		Message: "successfully get community member",
 	})
 }
 
+// GetPopularCommunity
+//
+// @Summary			Get popular community
+// @Description		Get popular community
+// @Tags			communities
+// @Produce			json
+// @Router			/communities/popular	[get]
+// @Success			200		{object}	dto.Response
+// @Failure			500		{object}	dto.ErrorResponse
 func (c *CommunityController) GetPopularCommunity(ctx *gin.Context) {
 	result, err := c.cs.GetPopularCommunity(ctx.Request.Context())
 
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, dto.Response{
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
-			Message: err.Error(),
+			Message: "internal server error",
 		})
 
 		return
@@ -121,19 +184,30 @@ func (c *CommunityController) GetPopularCommunity(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, dto.Response{
 		Success: true,
 		Data:    result,
-		Message: "success",
+		Message: "successfully get popular community",
 	})
 }
 
+// JoinCommunity
+//
+// @Summary			Join to community
+// @Description		Join to specified community
+// @Tags			communities
+// @Produce			json
+// @Router			/communities/join		[post]
+// @Param			data	body		dto.UserCommunity	true	"body to join community"
+// @Security		BearerToken
+// @Success			200		{object}	dto.Response
+// @Failure			500		{object}	dto.ErrorResponse
 func (c *CommunityController) JoinCommunity(ctx *gin.Context) {
 	id, _ := ctx.Get("id")
 
 	var body dto.UserCommunity
 	if err := ctx.ShouldBindWith(&body, binding.JSON); err != nil {
 		log.Println(err.Error())
-		ctx.JSON(http.StatusInternalServerError, dto.Response{
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
-			Message: err.Error(),
+			Message: "internal server error",
 		})
 
 		return
@@ -143,9 +217,9 @@ func (c *CommunityController) JoinCommunity(ctx *gin.Context) {
 
 	if err != nil {
 		log.Println(err.Error())
-		ctx.JSON(http.StatusInternalServerError, dto.Response{
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
-			Message: err.Error(),
+			Message: "internal server error",
 		})
 
 		return
@@ -157,21 +231,34 @@ func (c *CommunityController) JoinCommunity(ctx *gin.Context) {
 	})
 }
 
+// LeaveCommunity
+//
+// @Summary			Leave community
+// @Description		Leave specified community
+// @Tags			communities
+// @Produce			json
+// @Router			/communities/leave		[delete]
+// @Param			data	body		dto.UserCommunity	true	"body to leave community"
+// @Security		BearerToken
+// @Success			200		{object}	dto.Response
+// @Failure			500		{object}	dto.ErrorResponse
 func (c *CommunityController) LeaveCommunity(ctx *gin.Context) {
 	userId, _ := ctx.Get("id")
 
 	var body dto.UserCommunity
 	if err := ctx.ShouldBindWith(&body, binding.JSON); err != nil {
-		ctx.JSON(http.StatusInternalServerError, dto.Response{
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
-			Message: err.Error(),
+			Message: "internal server error",
 		})
+
+		return
 	}
 
 	if err := c.cs.LeaveCommunity(ctx.Request.Context(), userId.(int), body); err != nil {
-		ctx.JSON(http.StatusInternalServerError, dto.Response{
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
-			Message: err.Error(),
+			Message: "internal server error",
 		})
 
 		return

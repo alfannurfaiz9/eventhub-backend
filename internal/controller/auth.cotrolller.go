@@ -31,6 +31,8 @@ func NewAuthController(as *service.AuthService) *AuthController {
 // @Router			/auth/register	[post]
 // @Param			data	body	dto.Register	true	"body to register"
 // @Success			201		{object}	dto.Response
+// @Failure			400		{object}	dto.ErrorResponse
+// @Failure			406		{object}	dto.ErrorResponse
 // @Failure			500		{object}	dto.ErrorResponse
 func (a *AuthController) Register(ctx *gin.Context) {
 	var body dto.Register
@@ -40,7 +42,7 @@ func (a *AuthController) Register(ctx *gin.Context) {
 
 		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
-			Message: err.Error(),
+			Message: "internal server error",
 		})
 
 		return
@@ -48,10 +50,25 @@ func (a *AuthController) Register(ctx *gin.Context) {
 
 	if err := a.as.Register(ctx.Request.Context(), body); err != nil {
 		log.Println(err.Error())
+		if errors.Is(err, custom_error.RegisterInvalidLength) {
+			ctx.JSON(http.StatusBadRequest, dto.ErrorResponse{
+				Success: false,
+				Message: err.Error(),
+			})
 
+			return
+		}
+		if errors.Is(err, custom_error.RegisterAlreadyExist) {
+			ctx.JSON(http.StatusNotAcceptable, dto.ErrorResponse{
+				Success: false,
+				Message: err.Error(),
+			})
+
+			return
+		}
 		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
-			Message: err.Error(),
+			Message: "internal server error",
 		})
 
 		return
@@ -74,6 +91,7 @@ func (a *AuthController) Register(ctx *gin.Context) {
 // @Param			data	body	dto.Login	true	"body to login"
 // @Success			200		{object}	dto.Response
 // @Failure			400		{object}	dto.ErrorResponse
+// @Failure			401		{object}	dto.ErrorResponse
 // @Failure			500		{object}	dto.ErrorResponse
 func (a *AuthController) Login(ctx *gin.Context) {
 	var body dto.Login
@@ -83,7 +101,7 @@ func (a *AuthController) Login(ctx *gin.Context) {
 
 		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
-			Message: err.Error(),
+			Message: "internal server error",
 		})
 
 		return
@@ -110,7 +128,7 @@ func (a *AuthController) Login(ctx *gin.Context) {
 
 		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
-			Message: err.Error(),
+			Message: "internal server error",
 		})
 
 		return

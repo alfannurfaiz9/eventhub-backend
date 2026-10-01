@@ -21,15 +21,24 @@ func NewOrganizerController(os *service.OrganizerService) *OrganizerController {
 	}
 }
 
+// GetOrganizerDashboard
+//
+// @Summary			Get organizer dashboard
+// @Description		Get organizer dashboard
+// @Tags			organizer
+// @Produce			json
+// @Router			/organizer/dashboard	[get]
+// @Success			200		{object}	dto.Response
+// @Failure			500		{object}	dto.ErrorResponse
 func (o *OrganizerController) GetOrganizerDashboard(ctx *gin.Context) {
 	id, _ := ctx.Get("id")
 	result, err := o.os.GetOrganizerDashboard(ctx.Request.Context(), id.(int))
 
 	if err != nil {
 		log.Println(err.Error())
-		ctx.JSON(http.StatusInternalServerError, dto.Response{
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
-			Message: err.Error(),
+			Message: "internal server error",
 		})
 
 		return
@@ -42,6 +51,16 @@ func (o *OrganizerController) GetOrganizerDashboard(ctx *gin.Context) {
 	})
 }
 
+// GetOrganizerDashboardEvent
+//
+// @Summary			Get organizer dashboard all users
+// @Description		Get organizer dashboard all users
+// @Tags			organizer
+// @Produce			json
+// @Router			/organizer/dashboard/events	[get]
+// @Success			200		{object}	dto.Response
+// @Failure			403		{object}	dto.ErrorResponse
+// @Failure			500		{object}	dto.ErrorResponse
 func (o *OrganizerController) GetOrganizerEvent(ctx *gin.Context) {
 	id, _ := ctx.Get("id")
 	result, err := o.os.GetOrganizerEvent(ctx.Request.Context(), id.(int))
@@ -49,7 +68,7 @@ func (o *OrganizerController) GetOrganizerEvent(ctx *gin.Context) {
 	if err != nil {
 		log.Println(err.Error())
 		if errors.Is(err, custom_error.EventNotFound) {
-			ctx.JSON(http.StatusForbidden, dto.Response{
+			ctx.JSON(http.StatusForbidden, dto.ErrorResponse{
 				Success: false,
 				Message: err.Error(),
 			})
@@ -57,9 +76,9 @@ func (o *OrganizerController) GetOrganizerEvent(ctx *gin.Context) {
 			return
 		}
 
-		ctx.JSON(http.StatusInternalServerError, dto.Response{
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: true,
-			Message: err.Error(),
+			Message: "internal server error",
 		})
 
 		return

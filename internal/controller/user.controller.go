@@ -29,9 +29,9 @@ func (u *UserController) GetUserProfile(ctx *gin.Context) {
 
 	if err != nil {
 		log.Println(err.Error())
-		ctx.JSON(http.StatusInternalServerError, dto.Response{
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
-			Message: err.Error(),
+			Message: "internal server error",
 		})
 
 		return
@@ -40,7 +40,7 @@ func (u *UserController) GetUserProfile(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, dto.Response{
 		Success: true,
 		Data:    result,
-		Message: "success",
+		Message: "successfully get user profile",
 	})
 }
 
@@ -51,9 +51,9 @@ func (u *UserController) GetMyEvent(ctx *gin.Context) {
 
 	if err != nil {
 		log.Println(err.Error())
-		ctx.JSON(http.StatusInternalServerError, dto.Response{
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
-			Message: err.Error(),
+			Message: "internal server error",
 		})
 
 		return
@@ -62,7 +62,7 @@ func (u *UserController) GetMyEvent(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, dto.Response{
 		Success: true,
 		Data:    result,
-		Message: "success",
+		Message: "successfully get my event",
 	})
 }
 
@@ -74,7 +74,7 @@ func (u *UserController) GetNotification(ctx *gin.Context) {
 	if err != nil {
 		log.Println(err.Error())
 		if errors.Is(err, custom_error.NotificationNotFound) {
-			ctx.JSON(http.StatusForbidden, dto.Response{
+			ctx.JSON(http.StatusForbidden, dto.ErrorResponse{
 				Success: false,
 				Message: err.Error(),
 			})
@@ -82,9 +82,9 @@ func (u *UserController) GetNotification(ctx *gin.Context) {
 			return
 		}
 
-		ctx.JSON(http.StatusInternalServerError, dto.Response{
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
-			Message: err.Error(),
+			Message: "internal server error",
 		})
 
 		return
@@ -102,9 +102,9 @@ func (u *UserController) ChangeUserPassword(ctx *gin.Context) {
 
 	if err := ctx.ShouldBindWith(&body, binding.JSON); err != nil {
 		log.Println(err.Error())
-		ctx.JSON(http.StatusInternalServerError, dto.Response{
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
-			Message: err.Error(),
+			Message: "internal server error",
 		})
 
 		return
@@ -114,9 +114,9 @@ func (u *UserController) ChangeUserPassword(ctx *gin.Context) {
 
 	if err := u.us.ChangeUserPassword(ctx.Request.Context(), body, id.(int)); err != nil {
 		log.Println(err.Error())
-		ctx.JSON(http.StatusNotAcceptable, dto.Response{
+		ctx.JSON(http.StatusNotAcceptable, dto.ErrorResponse{
 			Success: false,
-			Message: err.Error(),
+			Message: "internal server error",
 		})
 
 		return

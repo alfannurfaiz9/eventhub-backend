@@ -7,7 +7,6 @@ type Response struct {
 }
 
 type ErrorResponse struct {
-	Success bool `example:"false"`
-	Data    any
+	Success bool   `example:"false"`
 	Message string `example:"error"`
 }
