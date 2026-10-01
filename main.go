@@ -31,21 +31,21 @@ func main() {
 
 	pdb := config.NewPsqlDb(os.Getenv("DBUSER"), os.Getenv("DBPASS"), os.Getenv("DBHOST"), os.Getenv("DBPORT"), os.Getenv("DBNAME"))
 	pool, err := pdb.Connect()
-
 	if err != nil {
 		log.Println("Cannot connect to database \n", err.Error())
 		return
 	}
-
 	defer pool.Close()
-
 	if err := pool.Ping(context.Background()); err != nil {
 		log.Println("Database is not ready \n", err.Error())
 	}
 
-	r := gin.Default()
+	rdbConf := config.NewRdb(os.Getenv("REDIS_USER"), os.Getenv("REDIS_PASS"), os.Getenv("REDIS_HOST"), os.Getenv("REDIS_PORT"))
+	rdb := rdbConf.Connect()
+	defer rdb.Close()
 
-	router.InitMainRouter(r, pool)
+	r := gin.Default()
+	router.InitMainRouter(r, pool, rdb)
 
 	r.Run(fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT")))
 }

@@ -126,28 +126,6 @@ func (a *AuthController) Login(ctx *gin.Context) {
 	})
 }
 
-func (a *AuthController) GetUserProfile(ctx *gin.Context) {
-	token, _ := ctx.Get("token")
-	claims, _ := token.(pkg.JWTClaims)
-
-	result, err := a.as.GetUserProfile(ctx.Request.Context(), claims.Id)
-
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, dto.Response{
-			Success: false,
-			Message: err.Error(),
-		})
-
-		return
-	}
-
-	ctx.JSON(http.StatusOK, dto.Response{
-		Success: true,
-		Data:    result,
-		Message: "success",
-	})
-}
-
 func (a *AuthController) ChangeUserPassword(ctx *gin.Context) {
 	var body dto.User
 
@@ -171,55 +149,6 @@ func (a *AuthController) ChangeUserPassword(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, dto.Response{
 		Success: true,
 		Message: "password successfully changed",
-	})
-}
-
-func (a *AuthController) GetMyEvent(ctx *gin.Context) {
-	userId, _ := ctx.Get("id")
-	result, err := a.as.GetMyEvent(ctx.Request.Context(), userId.(int))
-
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, dto.Response{
-			Success: false,
-			Message: err.Error(),
-		})
-
-		return
-	}
-
-	ctx.JSON(http.StatusOK, dto.Response{
-		Success: true,
-		Data:    result,
-		Message: "success",
-	})
-}
-
-func (a *AuthController) GetNotification(ctx *gin.Context) {
-	id, _ := ctx.Get("id")
-	result, err := a.as.GetNotification(ctx.Request.Context(), id.(int))
-
-	if err != nil {
-		if errors.Is(err, custom_error.NotificationNotFound) {
-			ctx.JSON(http.StatusForbidden, dto.Response{
-				Success: false,
-				Message: err.Error(),
-			})
-
-			return
-		}
-
-		ctx.JSON(http.StatusInternalServerError, dto.Response{
-			Success: false,
-			Message: err.Error(),
-		})
-
-		return
-	}
-
-	ctx.JSON(http.StatusOK, dto.Response{
-		Success: true,
-		Data:    result,
-		Message: "successfully get notification",
 	})
 }
 

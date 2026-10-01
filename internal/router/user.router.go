@@ -12,11 +12,11 @@ import (
 func initUserRouter(router *gin.Engine, db *pgxpool.Pool) {
 	r := router.Group("/user")
 
-	ar := repo.NewAuthRepo(db)
-	as := service.NewAuthService(ar)
-	ac := controller.NewAuthController(as)
+	ur := repo.NewUserRepo(db)
+	us := service.NewUserService(ur)
+	uc := controller.NewUserController(us)
 
-	r.GET("profile", middleware.CheckToken, ac.GetUserProfile)
-	r.GET("event", middleware.CheckToken, ac.GetMyEvent)
-	r.GET("notification", middleware.CheckToken, ac.GetNotification)
+	r.GET("profile", middleware.CheckToken, uc.GetUserProfile)
+	r.GET("event", middleware.CheckToken, uc.GetMyEvent)
+	r.GET("notification", middleware.CheckToken, uc.GetNotification)
 }

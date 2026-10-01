@@ -71,21 +71,6 @@ func (a *AuthService) Login(ctx context.Context, body dto.Login) (string, error)
 	return claims.GenToken()
 }
 
-func (a *AuthService) GetUserProfile(ctx context.Context, id int) (dto.User, error) {
-	result, err := a.ar.GetUserProfile(ctx, id)
-
-	data := dto.User{
-		FullName: result.FullName,
-		Email:    result.Email,
-		ImgUrl:   result.ImgUrl,
-		Address:  result.Address,
-		Bio:      result.Bio,
-		Role:     result.Role,
-	}
-
-	return data, err
-}
-
 func (a *AuthService) ChangeUserPassword(ctx context.Context, body dto.User, id int) error {
 	if len(body.Password) < 6 {
 		return custom_error.RegisterInvalidLength
@@ -99,49 +84,6 @@ func (a *AuthService) ChangeUserPassword(ctx context.Context, body dto.User, id 
 	}
 
 	return nil
-}
-
-func (a *AuthService) GetMyEvent(ctx context.Context, id int) ([]dto.EventList, error) {
-	result, err := a.ar.GetMyEvent(ctx, id)
-
-	data := make([]dto.EventList, 0, len(result))
-
-	for _, v := range result {
-		data = append(data, dto.EventList{
-			Title:         v.Event.Title,
-			ImgUrl:        v.Event.ImgUrl,
-			StartAt:       v.Event.StartAt,
-			Location:      v.Location.Name,
-			Capacity:      v.Event.Capacity,
-			TotalAttendee: v.TotalAttendee,
-		})
-	}
-
-	return data, err
-}
-
-func (a *AuthService) GetNotification(ctx context.Context, id int) ([]dto.Notification, error) {
-	result, err := a.ar.GetNotification(ctx, id)
-
-	if err != nil {
-		return nil, err
-	}
-
-	if len(result) == 0 {
-		return nil, custom_error.NotificationNotFound
-	}
-
-	data := make([]dto.Notification, 0, len(result))
-
-	for _, v := range result {
-		data = append(data, dto.Notification{
-			Title:       v.Title,
-			Description: v.Description,
-			CreatedAt:   v.CreatedAt,
-		})
-	}
-
-	return data, nil
 }
 
 func (a *AuthService) GetOrganizerDashboard(ctx context.Context, id int) (dto.OrganizerDashboard, error) {
