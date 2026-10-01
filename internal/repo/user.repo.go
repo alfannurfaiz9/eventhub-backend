@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"errors"
 
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/model"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -100,4 +101,21 @@ func (u *UserRepo) GetNotification(ctx context.Context, id int) ([]model.Notific
 	}
 
 	return notifications, nil
+}
+
+func (u *UserRepo) ChangeUserPassword(ctx context.Context, body model.User, id int) error {
+	sql := "UPDATE users SET password = $1 WHERE id = $2"
+	args := []any{body.Password, id}
+
+	cmd, err := u.db.Exec(ctx, sql, args...)
+
+	if err != nil {
+		return err
+	}
+
+	if cmd.RowsAffected() == 0 {
+		return errors.New("no row affected")
+	}
+
+	return nil
 }

@@ -70,7 +70,7 @@ func (t *TestimonyController) GetTestimony(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusInternalServerError, dto.Response{
+	ctx.JSON(http.StatusOK, dto.Response{
 		Success: true,
 		Data:    result,
 		Message: "success",

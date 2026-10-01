@@ -70,7 +70,7 @@ func (e *EventService) GetEvents(ctx context.Context, search, location, category
 	return data, err
 }
 
-func (e *EventService) GetEventDetail(ctx context.Context, id string) (dto.EventDetail, error) {
+func (e *EventService) GetEventDetail(ctx context.Context, id int) (dto.EventDetail, error) {
 	result, err := e.er.GetEventDetail(ctx, id)
 
 	if err != nil {

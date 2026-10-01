@@ -12,10 +12,12 @@ import (
 func initOrganizerRouter(router *gin.Engine, db *pgxpool.Pool) {
 	r := router.Group("/organizer")
 
-	ar := repo.NewAuthRepo(db)
-	as := service.NewAuthService(ar)
-	ac := controller.NewAuthController(as)
+	or := repo.NewOrganizerRepo(db)
+	os := service.NewOrganizerService(or)
+	oc := controller.NewOrganizerController(os)
 
-	r.GET("dashboard", middleware.CheckToken, ac.GetOrganizerDashboard)
-	r.GET("events", middleware.CheckToken, ac.GetOrganizerEvent)
+	r.Use(middleware.CheckToken)
+
+	r.GET("dashboard", oc.GetOrganizerDashboard)
+	r.GET("events", oc.GetOrganizerEvent)
 }

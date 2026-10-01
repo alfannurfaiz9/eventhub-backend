@@ -3,10 +3,10 @@ package controller
 import (
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/dto"
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/service"
-	"github.com/alfannurfaiz9/eventhub-backend.git/pkg"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 )
@@ -45,7 +45,8 @@ func (e *EventController) GetEvents(ctx *gin.Context) {
 }
 
 func (e *EventController) GetEventDetail(ctx *gin.Context) {
-	id := ctx.Param("id")
+	param := ctx.Param("id")
+	id, _ := strconv.Atoi(param)
 	result, err := e.es.GetEventDetail(ctx.Request.Context(), id)
 
 	if err != nil {
@@ -77,8 +78,7 @@ func (e *EventController) GetEventDetail(ctx *gin.Context) {
 // @Success			200		{object}	dto.Response
 // @Failure			500		{object}	dto.ErrorResponse
 func (e *EventController) JoinEvent(ctx *gin.Context) {
-	token, _ := ctx.Get("token")
-	claims, _ := token.(pkg.JWTClaims)
+	id, _ := ctx.Get("id")
 
 	var body dto.JoinEvent
 	if err := ctx.ShouldBindWith(&body, binding.JSON); err != nil {
@@ -91,7 +91,7 @@ func (e *EventController) JoinEvent(ctx *gin.Context) {
 		return
 	}
 
-	err := e.es.JoinEvent(ctx.Request.Context(), claims.Id, body)
+	err := e.es.JoinEvent(ctx.Request.Context(), id.(int), body)
 
 	if err != nil {
 		log.Println(err.Error())

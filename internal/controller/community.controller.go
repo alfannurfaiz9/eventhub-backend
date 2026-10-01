@@ -3,10 +3,10 @@ package controller
 import (
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/dto"
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/service"
-	"github.com/alfannurfaiz9/eventhub-backend.git/pkg"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 )
@@ -42,7 +42,8 @@ func (c *CommunityController) GetCommunities(ctx *gin.Context) {
 }
 
 func (c *CommunityController) GetCommunityDetail(ctx *gin.Context) {
-	id := ctx.Param("id")
+	param := ctx.Param("id")
+	id, _ := strconv.Atoi(param)
 	result, err := c.cs.GetCommunityDetail(ctx.Request.Context(), id)
 
 	if err != nil {
@@ -63,9 +64,9 @@ func (c *CommunityController) GetCommunityDetail(ctx *gin.Context) {
 }
 
 func (c *CommunityController) GetCommunityEvent(ctx *gin.Context) {
-	id := ctx.Param("id")
-
-	result, err := c.cs.GetCommunityEvent(ctx, id)
+	param := ctx.Param("id")
+	id, _ := strconv.Atoi(param)
+	result, err := c.cs.GetCommunityEvent(ctx.Request.Context(), id)
 
 	if err != nil {
 		log.Println(err.Error())
@@ -85,8 +86,9 @@ func (c *CommunityController) GetCommunityEvent(ctx *gin.Context) {
 }
 
 func (c *CommunityController) GetCommunityMember(ctx *gin.Context) {
-	id := ctx.Param("id")
-	result, err := c.cs.GetCommunityMember(ctx, id)
+	param := ctx.Param("id")
+	id, _ := strconv.Atoi(param)
+	result, err := c.cs.GetCommunityMember(ctx.Request.Context(), id)
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, dto.Response{
@@ -105,7 +107,7 @@ func (c *CommunityController) GetCommunityMember(ctx *gin.Context) {
 }
 
 func (c *CommunityController) GetPopularCommunity(ctx *gin.Context) {
-	result, err := c.cs.GetPopularCommunity(ctx)
+	result, err := c.cs.GetPopularCommunity(ctx.Request.Context())
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, dto.Response{
@@ -124,8 +126,7 @@ func (c *CommunityController) GetPopularCommunity(ctx *gin.Context) {
 }
 
 func (c *CommunityController) JoinCommunity(ctx *gin.Context) {
-	token, _ := ctx.Get("token")
-	claims, _ := token.(pkg.JWTClaims)
+	id, _ := ctx.Get("id")
 
 	var body dto.UserCommunity
 	if err := ctx.ShouldBindWith(&body, binding.JSON); err != nil {
@@ -138,7 +139,7 @@ func (c *CommunityController) JoinCommunity(ctx *gin.Context) {
 		return
 	}
 
-	err := c.cs.JoinCommunity(ctx.Request.Context(), claims.Id, body)
+	err := c.cs.JoinCommunity(ctx.Request.Context(), id.(int), body)
 
 	if err != nil {
 		log.Println(err.Error())

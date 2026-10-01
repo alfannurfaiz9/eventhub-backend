@@ -4,3 +4,5 @@ tmp
 .air.toml
 .env
 notes.txt
+makefile
+db

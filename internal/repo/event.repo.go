@@ -65,7 +65,7 @@ func (e *EventRepo) GetEvents(ctx context.Context, search, location, category st
 	return events, nil
 }
 
-func (e *EventRepo) GetEventDetail(ctx context.Context, id string) (model.EventDetail, error) {
+func (e *EventRepo) GetEventDetail(ctx context.Context, id int) (model.EventDetail, error) {
 	sql := "SELECT events.title, events.img_url, events.description, categories.name, events.start_at, locations.name, COUNT(user_event.event_id), events.capacity, users.full_name, communities.name FROM events LEFT JOIN locations ON locations.id = events.location_id LEFT JOIN communities ON communities.id = events.community_id LEFT JOIN event_category ON event_category.event_id = events.id LEFT JOIN categories ON categories.id = event_category.category_id LEFT JOIN user_event ON user_event.event_id = events.id LEFT JOIN users ON users.id = events.organizer_id WHERE events.id = $1 GROUP BY events.id, categories.id, locations.id, users.id, communities.id"
 	args := []any{id}
 

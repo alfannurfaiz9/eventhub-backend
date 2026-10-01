@@ -71,58 +71,6 @@ func (a *AuthService) Login(ctx context.Context, body dto.Login) (string, error)
 	return claims.GenToken()
 }
 
-func (a *AuthService) ChangeUserPassword(ctx context.Context, body dto.User, id int) error {
-	if len(body.Password) < 6 {
-		return custom_error.RegisterInvalidLength
-	}
-
-	hash := pkg.NewRecommendHashConfig()
-	hashedPass := hash.GenerateHash(body.Password)
-
-	if err := a.ar.ChangeUserPassword(ctx, model.User{Password: hashedPass}, id); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (a *AuthService) GetOrganizerDashboard(ctx context.Context, id int) (dto.OrganizerDashboard, error) {
-	result, err := a.ar.GetOrganizerDashboard(ctx, id)
-
-	data := dto.OrganizerDashboard{
-		TotalEvent:    result.TotalAttendee,
-		TotalAttendee: result.TotalAttendee,
-		AvgFillRate:   result.AvgFillRate,
-	}
-
-	return data, err
-}
-
-func (a *AuthService) GetOrganizerEvent(ctx context.Context, id int) ([]dto.EventList, error) {
-	result, err := a.ar.GetOrganizerEvent(ctx, id)
-
-	if err != nil {
-		return nil, err
-	}
-
-	if len(result) == 0 {
-		return nil, custom_error.EventNotFound
-	}
-
-	events := make([]dto.EventList, 0, len(result))
-	for _, v := range result {
-		events = append(events, dto.EventList{
-			Title:         v.Event.Title,
-			ImgUrl:        v.Event.ImgUrl,
-			StartAt:       v.Event.StartAt,
-			Location:      v.Location.Name,
-			TotalAttendee: v.TotalAttendee,
-		})
-	}
-
-	return events, nil
-}
-
 func (a *AuthService) GetAdminDashboard(ctx context.Context) (dto.AdminDashboard, error) {
 	result, err := a.ar.GetAdminDashboard(ctx)
 

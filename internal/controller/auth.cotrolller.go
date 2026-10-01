@@ -8,7 +8,6 @@ import (
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/dto"
 	custom_error "github.com/alfannurfaiz9/eventhub-backend.git/internal/error"
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/service"
-	"github.com/alfannurfaiz9/eventhub-backend.git/pkg"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 )
@@ -123,84 +122,6 @@ func (a *AuthController) Login(ctx *gin.Context) {
 			"token": token,
 		},
 		Message: "login success",
-	})
-}
-
-func (a *AuthController) ChangeUserPassword(ctx *gin.Context) {
-	var body dto.User
-
-	if err := ctx.ShouldBindWith(&body, binding.JSON); err != nil {
-		ctx.JSON(http.StatusInternalServerError, dto.Response{
-			Success: false,
-			Message: err.Error(),
-		})
-	}
-
-	token, _ := ctx.Get("token")
-	claims, _ := token.(pkg.JWTClaims)
-
-	if err := a.as.ChangeUserPassword(ctx, body, claims.Id); err != nil {
-		ctx.JSON(http.StatusNotAcceptable, dto.Response{
-			Success: false,
-			Message: err.Error(),
-		})
-	}
-
-	ctx.JSON(http.StatusOK, dto.Response{
-		Success: true,
-		Message: "password successfully changed",
-	})
-}
-
-func (a *AuthController) GetOrganizerDashboard(ctx *gin.Context) {
-	id, _ := ctx.Get("id")
-	result, err := a.as.GetOrganizerDashboard(ctx.Request.Context(), id.(int))
-
-	if err != nil {
-		log.Println(err.Error())
-
-		ctx.JSON(http.StatusInternalServerError, dto.Response{
-			Success: false,
-			Message: err.Error(),
-		})
-
-		return
-	}
-
-	ctx.JSON(http.StatusOK, dto.Response{
-		Success: true,
-		Data:    result,
-		Message: "succeffully get dashboard",
-	})
-}
-
-func (a *AuthController) GetOrganizerEvent(ctx *gin.Context) {
-	id, _ := ctx.Get("id")
-	result, err := a.as.GetOrganizerEvent(ctx.Request.Context(), id.(int))
-
-	if err != nil {
-		log.Println(err.Error())
-		if errors.Is(err, custom_error.EventNotFound) {
-			ctx.JSON(http.StatusForbidden, dto.Response{
-				Success: false,
-				Message: err.Error(),
-			})
-
-			return
-		}
-
-		ctx.JSON(http.StatusInternalServerError, dto.Response{
-			Success: true,
-			Message: err.Error(),
-		})
-
-		return
-	}
-
-	ctx.JSON(http.StatusOK, dto.Response{
-		Success: true,
-		Data:    result,
-		Message: "successfully get event",
 	})
 }
 

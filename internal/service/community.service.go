@@ -40,7 +40,7 @@ func (c *CommunityService) GetCommunities(ctx context.Context, categories string
 	return data, err
 }
 
-func (c *CommunityService) GetCommunityDetail(ctx context.Context, id string) (dto.CommunityList, error) {
+func (c *CommunityService) GetCommunityDetail(ctx context.Context, id int) (dto.CommunityList, error) {
 	result, err := c.cr.GetCommunityDetail(ctx, id)
 
 	if err != nil {
@@ -62,7 +62,7 @@ func (c *CommunityService) GetCommunityDetail(ctx context.Context, id string) (d
 	return data, nil
 }
 
-func (c *CommunityService) GetCommunityEvent(ctx context.Context, id string) ([]dto.EventList, error) {
+func (c *CommunityService) GetCommunityEvent(ctx context.Context, id int) ([]dto.EventList, error) {
 	result, err := c.cr.GetCommunityEvent(ctx, id)
 
 	data := make([]dto.EventList, 0, len(result))
@@ -82,7 +82,7 @@ func (c *CommunityService) GetCommunityEvent(ctx context.Context, id string) ([]
 	return data, err
 }
 
-func (c *CommunityService) GetCommunityMember(ctx context.Context, id string) ([]dto.CommunityMember, error) {
+func (c *CommunityService) GetCommunityMember(ctx context.Context, id int) ([]dto.CommunityMember, error) {
 	result, err := c.cr.GetCommunityMember(ctx, id)
 
 	data := make([]dto.CommunityMember, 0, len(result))

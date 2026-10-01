@@ -5,7 +5,9 @@ import (
 
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/dto"
 	custom_error "github.com/alfannurfaiz9/eventhub-backend.git/internal/error"
+	"github.com/alfannurfaiz9/eventhub-backend.git/internal/model"
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/repo"
+	"github.com/alfannurfaiz9/eventhub-backend.git/pkg"
 )
 
 type UserService struct {
@@ -74,4 +76,19 @@ func (u *UserService) GetNotification(ctx context.Context, id int) ([]dto.Notifi
 	}
 
 	return data, nil
+}
+
+func (u *UserService) ChangeUserPassword(ctx context.Context, body dto.User, id int) error {
+	if len(body.Password) < 6 {
+		return custom_error.RegisterInvalidLength
+	}
+
+	hash := pkg.NewRecommendHashConfig()
+	hashedPass := hash.GenerateHash(body.Password)
+
+	if err := u.ur.ChangeUserPassword(ctx, model.User{Password: hashedPass}, id); err != nil {
+		return err
+	}
+
+	return nil
 }

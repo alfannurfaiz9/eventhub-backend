@@ -61,7 +61,7 @@ func (c *CommunityRepo) GetCommunities(ctx context.Context, categories string) (
 	return communities, nil
 }
 
-func (c *CommunityRepo) GetCommunityDetail(ctx context.Context, id string) (model.CommunityList, error) {
+func (c *CommunityRepo) GetCommunityDetail(ctx context.Context, id int) (model.CommunityList, error) {
 	sql := `
 	SELECT communities.name, communities.img_url,communities.description, STRING_AGG(categories.name, ', '), COUNT(user_community.community_id), COUNT(events.id)
 	FROM communities
@@ -88,7 +88,7 @@ func (c *CommunityRepo) GetCommunityDetail(ctx context.Context, id string) (mode
 	return data, nil
 }
 
-func (c *CommunityRepo) GetCommunityEvent(ctx context.Context, id string) ([]model.EventList, error) {
+func (c *CommunityRepo) GetCommunityEvent(ctx context.Context, id int) ([]model.EventList, error) {
 	sql := `
 	SELECT events.title, events.img_url, STRING_AGG(categories.name, ', '), events.start_at, locations.name, COUNT(user_event.event_id), events.capacity 
 	FROM events 
@@ -134,7 +134,7 @@ func (c *CommunityRepo) GetCommunityEvent(ctx context.Context, id string) ([]mod
 	return events, nil
 }
 
-func (c *CommunityRepo) GetCommunityMember(ctx context.Context, id string) ([]model.CommunityMember, error) {
+func (c *CommunityRepo) GetCommunityMember(ctx context.Context, id int) ([]model.CommunityMember, error) {
 	sql := `
 	SELECT users.full_name
 	FROM user_community
