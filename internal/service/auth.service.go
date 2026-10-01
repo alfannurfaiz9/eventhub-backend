@@ -70,34 +70,3 @@ func (a *AuthService) Login(ctx context.Context, body dto.Login) (string, error)
 	claims := pkg.NewJWTClaims(user.Id, user.Role)
 	return claims.GenToken()
 }
-
-func (a *AuthService) GetAdminDashboard(ctx context.Context) (dto.AdminDashboard, error) {
-	result, err := a.ar.GetAdminDashboard(ctx)
-
-	data := dto.AdminDashboard{
-		TotalUser:      result.TotalUser,
-		TotalEvent:     result.TotalEvent,
-		TotalCommunity: result.TotalCommunity,
-		AvgFillRate:    result.AvgFillRate,
-	}
-
-	return data, err
-}
-
-func (a *AuthService) GetAllUser(ctx context.Context) ([]dto.UserList, error) {
-	result, err := a.ar.GetAllUser(ctx)
-
-	userlist := make([]dto.UserList, 0, len(result))
-
-	for _, v := range result {
-		userlist = append(userlist, dto.UserList{
-			FullName:  v.FullName,
-			Email:     v.Email,
-			Role:      v.Role,
-			Status:    v.Status,
-			CreatedAt: v.CreatedAt,
-		})
-	}
-
-	return userlist, err
-}

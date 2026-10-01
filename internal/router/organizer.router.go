@@ -10,7 +10,7 @@ import (
 )
 
 func initOrganizerRouter(router *gin.Engine, db *pgxpool.Pool) {
-	r := router.Group("/organizer")
+	r := router.Group("/organizer/dashboard")
 
 	or := repo.NewOrganizerRepo(db)
 	os := service.NewOrganizerService(or)
@@ -18,6 +18,6 @@ func initOrganizerRouter(router *gin.Engine, db *pgxpool.Pool) {
 
 	r.Use(middleware.CheckToken)
 
-	r.GET("dashboard", oc.GetOrganizerDashboard)
+	r.GET("", oc.GetOrganizerDashboard)
 	r.GET("events", oc.GetOrganizerEvent)
 }
