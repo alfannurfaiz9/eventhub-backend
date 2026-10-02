@@ -6,10 +6,12 @@ import (
 
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/model"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/redis/go-redis/v9"
 )
 
 type AuthRepo struct {
-	db *pgxpool.Pool
+	db  *pgxpool.Pool
+	rdb *redis.Client
 }
 
 func NewAuthRepo(db *pgxpool.Pool) *AuthRepo {

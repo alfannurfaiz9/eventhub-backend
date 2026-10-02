@@ -7,10 +7,13 @@ import (
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/service"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/redis/go-redis/v9"
 )
 
-func initCommunityRouter(router *gin.Engine, db *pgxpool.Pool) {
+func initCommunityRouter(router *gin.Engine, db *pgxpool.Pool, rdb *redis.Client) {
 	r := router.Group("/communities")
+
+	am := middleware.NewAuthMiddleWare(rdb)
 
 	cr := repo.NewCommunityRepo(db)
 	cs := service.NewCommunityService(cr)
@@ -21,6 +24,7 @@ func initCommunityRouter(router *gin.Engine, db *pgxpool.Pool) {
 	r.GET(":id/events", cc.GetCommunityEvent)
 	r.GET(":id/members", cc.GetCommunityMember)
 	r.GET("popular", cc.GetPopularCommunity)
-	r.POST("join", middleware.CheckToken, cc.JoinCommunity)
-	r.DELETE("leave", middleware.CheckToken, cc.LeaveCommunity)
+
+	r.POST("join", am.UserMiddleware, cc.JoinCommunity)
+	r.DELETE("leave", am.UserMiddleware, cc.LeaveCommunity)
 }

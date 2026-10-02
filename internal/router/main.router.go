@@ -12,11 +12,11 @@ import (
 func InitMainRouter(router *gin.Engine, db *pgxpool.Pool, rdb *redis.Client) {
 	router.GET("documentation/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	initAuthRouter(router, db)
+	initAuthRouter(router, db, rdb)
 	initEventRouter(router, db, rdb)
-	initCommunityRouter(router, db)
-	initUserRouter(router, db)
-	initTestimonyRouter(router, db)
-	initOrganizerRouter(router, db)
-	initAdminRouter(router, db)
+	initCommunityRouter(router, db, rdb)
+	initUserRouter(router, db, rdb)
+	initTestimonyRouter(router, db, rdb)
+	initOrganizerRouter(router, db, rdb)
+	initAdminRouter(router, db, rdb)
 }

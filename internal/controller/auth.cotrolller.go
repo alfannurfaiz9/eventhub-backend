@@ -142,3 +142,21 @@ func (a *AuthController) Login(ctx *gin.Context) {
 		Message: "login success",
 	})
 }
+
+func (a *AuthController) Logout(ctx *gin.Context) {
+	token := ctx.GetHeader("Authorization")
+
+	if err := a.as.Logout(ctx.Request.Context(), token); err != nil {
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
+			Success: false,
+			Message: "internal server error",
+		})
+
+		return
+	}
+
+	ctx.JSON(http.StatusOK, dto.Response{
+		Success: true,
+		Message: "successfully loged out",
+	})
+}

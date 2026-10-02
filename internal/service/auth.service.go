@@ -2,7 +2,10 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"log"
+	"strings"
 
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/dto"
 	custom_error "github.com/alfannurfaiz9/eventhub-backend.git/internal/error"
@@ -10,15 +13,18 @@ import (
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/repo"
 	"github.com/alfannurfaiz9/eventhub-backend.git/pkg"
 	"github.com/jackc/pgx/v5"
+	"github.com/redis/go-redis/v9"
 )
 
 type AuthService struct {
-	ar *repo.AuthRepo
+	ar  *repo.AuthRepo
+	rdb *redis.Client
 }
 
-func NewAuthService(ar *repo.AuthRepo) *AuthService {
+func NewAuthService(ar *repo.AuthRepo, rdb *redis.Client) *AuthService {
 	return &AuthService{
-		ar: ar,
+		ar:  ar,
+		rdb: rdb,
 	}
 }
 
@@ -69,4 +75,42 @@ func (a *AuthService) Login(ctx context.Context, body dto.Login) (string, error)
 
 	claims := pkg.NewJWTClaims(user.Id, user.Role)
 	return claims.GenToken()
+}
+
+func (a *AuthService) Logout(ctx context.Context, token string) error {
+	redisToken, err := a.rdb.Get(ctx, "alfan:token").Result()
+	if err != nil {
+		log.Println(err)
+	} else {
+		var redisJson []string
+		if err := json.Unmarshal([]byte(redisToken), &redisJson); err != nil {
+			return err
+		}
+
+		splittedToken := strings.Split(token, " ")[1]
+		redisJson = append(redisJson, splittedToken)
+		tokenJson, err := json.Marshal(redisJson)
+		if err != nil {
+			return err
+		}
+
+		if err := a.rdb.Set(ctx, "alfan:token", tokenJson, 0).Err(); err != nil {
+			return err
+		}
+
+		return nil
+	}
+
+	splittedToken := strings.Split(token, " ")[1]
+	tokenArr := []string{splittedToken}
+	tokenJson, err := json.Marshal(tokenArr)
+	if err != nil {
+		return err
+	}
+
+	if err := a.rdb.Set(ctx, "alfan:token", tokenJson, 0).Err(); err != nil {
+		return err
+	}
+
+	return nil
 }

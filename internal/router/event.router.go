@@ -13,6 +13,8 @@ import (
 func initEventRouter(router *gin.Engine, db *pgxpool.Pool, rdb *redis.Client) {
 	r := router.Group("/events")
 
+	am := middleware.NewAuthMiddleWare(rdb)
+
 	er := repo.NewEventRepo(db)
 	es := service.NewEventService(er, rdb)
 	ec := controller.NewEventController(es)
@@ -20,6 +22,6 @@ func initEventRouter(router *gin.Engine, db *pgxpool.Pool, rdb *redis.Client) {
 	r.GET("", ec.GetEvents)
 	r.GET("upcoming", ec.GetUpcomingEvent)
 	r.GET("detail/:id", ec.GetEventDetail)
-	r.POST("join", middleware.CheckToken, ec.JoinEvent)
-	r.DELETE("leave", middleware.CheckToken, ec.LeaveEvent)
+	r.POST("join", am.UserMiddleware, ec.JoinEvent)
+	r.DELETE("leave", am.UserMiddleware, ec.LeaveEvent)
 }

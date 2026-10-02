@@ -7,16 +7,19 @@ import (
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/service"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/redis/go-redis/v9"
 )
 
-func initUserRouter(router *gin.Engine, db *pgxpool.Pool) {
+func initUserRouter(router *gin.Engine, db *pgxpool.Pool, rdb *redis.Client) {
 	r := router.Group("/user")
+
+	am := middleware.NewAuthMiddleWare(rdb)
 
 	ur := repo.NewUserRepo(db)
 	us := service.NewUserService(ur)
 	uc := controller.NewUserController(us)
 
-	r.Use(middleware.CheckToken)
+	r.Use(am.UserMiddleware)
 
 	r.GET("profile", uc.GetUserProfile)
 	r.GET("event", uc.GetMyEvent)
