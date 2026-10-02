@@ -9,6 +9,7 @@ import (
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/dto"
 	custom_error "github.com/alfannurfaiz9/eventhub-backend.git/internal/error"
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/service"
+	"github.com/alfannurfaiz9/eventhub-backend.git/pkg"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 )
@@ -200,7 +201,8 @@ func (c *CommunityController) GetPopularCommunity(ctx *gin.Context) {
 // @Success			200		{object}	dto.Response
 // @Failure			500		{object}	dto.ErrorResponse
 func (c *CommunityController) JoinCommunity(ctx *gin.Context) {
-	id, _ := ctx.Get("id")
+	token, _ := ctx.Get("token")
+	claims, _ := token.(pkg.JWTClaims)
 
 	var body dto.UserCommunity
 	if err := ctx.ShouldBindWith(&body, binding.JSON); err != nil {
@@ -213,7 +215,7 @@ func (c *CommunityController) JoinCommunity(ctx *gin.Context) {
 		return
 	}
 
-	err := c.cs.JoinCommunity(ctx.Request.Context(), id.(int), body)
+	err := c.cs.JoinCommunity(ctx.Request.Context(), claims.Id, body)
 
 	if err != nil {
 		log.Println(err.Error())
@@ -243,7 +245,8 @@ func (c *CommunityController) JoinCommunity(ctx *gin.Context) {
 // @Success			200		{object}	dto.Response
 // @Failure			500		{object}	dto.ErrorResponse
 func (c *CommunityController) LeaveCommunity(ctx *gin.Context) {
-	userId, _ := ctx.Get("id")
+	token, _ := ctx.Get("token")
+	claims, _ := token.(pkg.JWTClaims)
 
 	var body dto.UserCommunity
 	if err := ctx.ShouldBindWith(&body, binding.JSON); err != nil {
@@ -255,7 +258,7 @@ func (c *CommunityController) LeaveCommunity(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.cs.LeaveCommunity(ctx.Request.Context(), userId.(int), body); err != nil {
+	if err := c.cs.LeaveCommunity(ctx.Request.Context(), claims.Id, body); err != nil {
 		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
 			Message: "internal server error",

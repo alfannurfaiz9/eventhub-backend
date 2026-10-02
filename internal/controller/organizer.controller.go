@@ -8,6 +8,7 @@ import (
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/dto"
 	custom_error "github.com/alfannurfaiz9/eventhub-backend.git/internal/error"
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/service"
+	"github.com/alfannurfaiz9/eventhub-backend.git/pkg"
 	"github.com/gin-gonic/gin"
 )
 
@@ -31,8 +32,10 @@ func NewOrganizerController(os *service.OrganizerService) *OrganizerController {
 // @Success			200		{object}	dto.Response
 // @Failure			500		{object}	dto.ErrorResponse
 func (o *OrganizerController) GetOrganizerDashboard(ctx *gin.Context) {
-	id, _ := ctx.Get("id")
-	result, err := o.os.GetOrganizerDashboard(ctx.Request.Context(), id.(int))
+	token, _ := ctx.Get("token")
+	claims, _ := token.(pkg.JWTClaims)
+
+	result, err := o.os.GetOrganizerDashboard(ctx.Request.Context(), claims.Id)
 
 	if err != nil {
 		log.Println(err.Error())
@@ -62,8 +65,10 @@ func (o *OrganizerController) GetOrganizerDashboard(ctx *gin.Context) {
 // @Failure			403		{object}	dto.ErrorResponse
 // @Failure			500		{object}	dto.ErrorResponse
 func (o *OrganizerController) GetOrganizerEvent(ctx *gin.Context) {
-	id, _ := ctx.Get("id")
-	result, err := o.os.GetOrganizerEvent(ctx.Request.Context(), id.(int))
+	token, _ := ctx.Get("token")
+	claims, _ := token.(pkg.JWTClaims)
+
+	result, err := o.os.GetOrganizerEvent(ctx.Request.Context(), claims.Id)
 
 	if err != nil {
 		log.Println(err.Error())

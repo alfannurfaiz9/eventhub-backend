@@ -25,7 +25,7 @@ func NewAuthMiddleWare(rdb *redis.Client) *AuthMiddleWare {
 	}
 }
 
-func (a *AuthMiddleWare) UserMiddleware(ctx *gin.Context) {
+func (a *AuthMiddleWare) CheckToken(ctx *gin.Context) {
 	bearer := ctx.GetHeader("Authorization")
 	if bearer == "" {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, dto.ErrorResponse{
@@ -90,6 +90,95 @@ func (a *AuthMiddleWare) UserMiddleware(ctx *gin.Context) {
 	}
 
 	ctx.Set("token", token)
-	ctx.Set("id", token.Id)
+	ctx.Next()
+}
+
+func (a *AuthMiddleWare) UserMiddleware(ctx *gin.Context) {
+	token, exists := ctx.Get("token")
+	if !exists {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, dto.ErrorResponse{
+			Success: false,
+			Message: "missing token",
+		})
+		return
+	}
+
+	t, ok := token.(pkg.JWTClaims)
+	if !ok {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, dto.ErrorResponse{
+			Success: false,
+			Message: "invalid claims",
+		})
+		return
+	}
+
+	if t.Role != "attendee" {
+		ctx.AbortWithStatusJSON(http.StatusNotFound, dto.ErrorResponse{
+			Success: false,
+			Message: "no previlage",
+		})
+		return
+	}
+
+	ctx.Next()
+}
+
+func (a *AuthMiddleWare) AdminMiddleware(ctx *gin.Context) {
+	token, exists := ctx.Get("token")
+	if !exists {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, dto.ErrorResponse{
+			Success: false,
+			Message: "missing token",
+		})
+		return
+	}
+
+	t, ok := token.(pkg.JWTClaims)
+	if !ok {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, dto.ErrorResponse{
+			Success: false,
+			Message: "invalid claims",
+		})
+		return
+	}
+
+	if t.Role != "admin" {
+		ctx.AbortWithStatusJSON(http.StatusNotFound, dto.ErrorResponse{
+			Success: false,
+			Message: "route not found",
+		})
+		return
+	}
+
+	ctx.Next()
+}
+
+func (a *AuthMiddleWare) OrganizerMiddleware(ctx *gin.Context) {
+	token, exists := ctx.Get("token")
+	if !exists {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, dto.ErrorResponse{
+			Success: false,
+			Message: "missing token",
+		})
+		return
+	}
+
+	t, ok := token.(pkg.JWTClaims)
+	if !ok {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, dto.ErrorResponse{
+			Success: false,
+			Message: "invalid claims",
+		})
+		return
+	}
+
+	if t.Role != "organizer" {
+		ctx.AbortWithStatusJSON(http.StatusNotFound, dto.ErrorResponse{
+			Success: false,
+			Message: "route not found",
+		})
+		return
+	}
+
 	ctx.Next()
 }

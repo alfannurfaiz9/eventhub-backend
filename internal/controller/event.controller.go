@@ -9,6 +9,7 @@ import (
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/dto"
 	custom_error "github.com/alfannurfaiz9/eventhub-backend.git/internal/error"
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/service"
+	"github.com/alfannurfaiz9/eventhub-backend.git/pkg"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 )
@@ -114,7 +115,8 @@ func (e *EventController) GetEventDetail(ctx *gin.Context) {
 // @Success			200		{object}	dto.Response
 // @Failure			500		{object}	dto.ErrorResponse
 func (e *EventController) JoinEvent(ctx *gin.Context) {
-	id, _ := ctx.Get("id")
+	token, _ := ctx.Get("token")
+	claims, _ := token.(pkg.JWTClaims)
 
 	var body dto.JoinEvent
 	if err := ctx.ShouldBindWith(&body, binding.JSON); err != nil {
@@ -127,7 +129,7 @@ func (e *EventController) JoinEvent(ctx *gin.Context) {
 		return
 	}
 
-	err := e.es.JoinEvent(ctx.Request.Context(), id.(int), body)
+	err := e.es.JoinEvent(ctx.Request.Context(), claims.Id, body)
 
 	if err != nil {
 		log.Println(err.Error())
@@ -186,7 +188,8 @@ func (e *EventController) GetUpcomingEvent(ctx *gin.Context) {
 // @Success			200		{object}	dto.Response
 // @Failure			500		{object}	dto.ErrorResponse
 func (e *EventController) LeaveEvent(ctx *gin.Context) {
-	userId, _ := ctx.Get("id")
+	token, _ := ctx.Get("token")
+	claims, _ := token.(pkg.JWTClaims)
 
 	var body dto.JoinEvent
 	if err := ctx.ShouldBindWith(&body, binding.JSON); err != nil {
@@ -199,7 +202,7 @@ func (e *EventController) LeaveEvent(ctx *gin.Context) {
 		return
 	}
 
-	if err := e.es.LeaveEvent(ctx.Request.Context(), userId.(int), body); err != nil {
+	if err := e.es.LeaveEvent(ctx.Request.Context(), claims.Id, body); err != nil {
 		log.Println(err.Error())
 		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,

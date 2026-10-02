@@ -8,6 +8,7 @@ import (
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/dto"
 	custom_error "github.com/alfannurfaiz9/eventhub-backend.git/internal/error"
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/service"
+	"github.com/alfannurfaiz9/eventhub-backend.git/pkg"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 )
@@ -23,9 +24,10 @@ func NewUserController(us *service.UserService) *UserController {
 }
 
 func (u *UserController) GetUserProfile(ctx *gin.Context) {
-	id, _ := ctx.Get("id")
+	token, _ := ctx.Get("token")
+	claims, _ := token.(pkg.JWTClaims)
 
-	result, err := u.us.GetUserProfile(ctx.Request.Context(), id.(int))
+	result, err := u.us.GetUserProfile(ctx.Request.Context(), claims.Id)
 
 	if err != nil {
 		log.Println(err.Error())
@@ -45,9 +47,10 @@ func (u *UserController) GetUserProfile(ctx *gin.Context) {
 }
 
 func (u *UserController) GetMyEvent(ctx *gin.Context) {
-	id, _ := ctx.Get("id")
+	token, _ := ctx.Get("token")
+	claims, _ := token.(pkg.JWTClaims)
 
-	result, err := u.us.GetMyEvent(ctx.Request.Context(), id.(int))
+	result, err := u.us.GetMyEvent(ctx.Request.Context(), claims.Id)
 
 	if err != nil {
 		log.Println(err.Error())
@@ -67,9 +70,10 @@ func (u *UserController) GetMyEvent(ctx *gin.Context) {
 }
 
 func (u *UserController) GetNotification(ctx *gin.Context) {
-	id, _ := ctx.Get("id")
+	token, _ := ctx.Get("token")
+	claims, _ := token.(pkg.JWTClaims)
 
-	result, err := u.us.GetNotification(ctx.Request.Context(), id.(int))
+	result, err := u.us.GetNotification(ctx.Request.Context(), claims.Id)
 
 	if err != nil {
 		log.Println(err.Error())
@@ -110,9 +114,10 @@ func (u *UserController) ChangeUserPassword(ctx *gin.Context) {
 		return
 	}
 
-	id, _ := ctx.Get("id")
+	token, _ := ctx.Get("token")
+	claims, _ := token.(pkg.JWTClaims)
 
-	if err := u.us.ChangeUserPassword(ctx.Request.Context(), body, id.(int)); err != nil {
+	if err := u.us.ChangeUserPassword(ctx.Request.Context(), body, claims.Id); err != nil {
 		log.Println(err.Error())
 		ctx.JSON(http.StatusNotAcceptable, dto.ErrorResponse{
 			Success: false,

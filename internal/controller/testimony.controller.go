@@ -8,6 +8,7 @@ import (
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/dto"
 	custom_error "github.com/alfannurfaiz9/eventhub-backend.git/internal/error"
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/service"
+	"github.com/alfannurfaiz9/eventhub-backend.git/pkg"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 )
@@ -34,8 +35,9 @@ func (t *TestimonyController) SetTestimony(ctx *gin.Context) {
 		return
 	}
 
-	userId, _ := ctx.Get("id")
-	if err := t.ts.SetTestimony(ctx.Request.Context(), userId.(int), body); err != nil {
+	token, _ := ctx.Get("token")
+	claims, _ := token.(pkg.JWTClaims)
+	if err := t.ts.SetTestimony(ctx.Request.Context(), claims.Id, body); err != nil {
 		log.Println(err.Error())
 		if errors.Is(err, custom_error.TestimonyEmptyField) {
 			ctx.JSON(http.StatusNoContent, dto.ErrorResponse{

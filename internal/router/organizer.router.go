@@ -19,7 +19,7 @@ func initOrganizerRouter(router *gin.Engine, db *pgxpool.Pool, rdb *redis.Client
 	os := service.NewOrganizerService(or)
 	oc := controller.NewOrganizerController(os)
 
-	r.Use(am.UserMiddleware)
+	r.Use(am.CheckToken, am.OrganizerMiddleware)
 
 	r.GET("", oc.GetOrganizerDashboard)
 	r.GET("events", oc.GetOrganizerEvent)

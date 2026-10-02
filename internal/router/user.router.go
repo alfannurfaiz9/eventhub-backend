@@ -19,10 +19,10 @@ func initUserRouter(router *gin.Engine, db *pgxpool.Pool, rdb *redis.Client) {
 	us := service.NewUserService(ur)
 	uc := controller.NewUserController(us)
 
-	r.Use(am.UserMiddleware)
+	r.Use(am.CheckToken)
 
-	r.GET("profile", uc.GetUserProfile)
-	r.GET("event", uc.GetMyEvent)
+	r.GET("profile", am.UserMiddleware, uc.GetUserProfile)
+	r.GET("event", am.UserMiddleware, uc.GetMyEvent)
 	r.GET("notification", uc.GetNotification)
 	r.POST("change-password", uc.ChangeUserPassword)
 }

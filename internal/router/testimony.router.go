@@ -20,5 +20,5 @@ func initTestimonyRouter(router *gin.Engine, db *pgxpool.Pool, rdb *redis.Client
 	tc := controller.NewTestimonyController(ts)
 
 	r.GET("", tc.GetTestimony)
-	r.POST("", am.UserMiddleware, tc.SetTestimony)
+	r.POST("", am.CheckToken, am.UserMiddleware, tc.SetTestimony)
 }

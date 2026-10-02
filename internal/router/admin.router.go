@@ -19,7 +19,7 @@ func initAdminRouter(router *gin.Engine, db *pgxpool.Pool, rdb *redis.Client) {
 	as := service.NewAdminService(ar)
 	ac := controller.NewAdminController(as)
 
-	r.Use(am.UserMiddleware)
+	r.Use(am.CheckToken, am.AdminMiddleware)
 
 	r.GET("", ac.GetAdminDashboard)
 	r.GET("users", ac.GetAllUser)
