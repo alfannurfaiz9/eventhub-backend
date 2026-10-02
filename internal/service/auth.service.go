@@ -115,3 +115,36 @@ func (a *AuthService) Logout(ctx context.Context, token string) error {
 
 	return nil
 }
+
+func (a *AuthService) ForgotPassword(ctx context.Context, body dto.ForgotPassword) error {
+	if len(body.Email) == 0 {
+		return custom_error.UserNotFound
+	}
+
+	if len(body.NewPassword) < 6 {
+		return custom_error.ForgotPasswordInvalidLength
+	}
+
+	email, err := a.ar.FindUserByEmail(ctx, model.User{
+		Email: body.Email,
+	})
+
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return custom_error.UserNotFound
+		}
+		return err
+	}
+
+	hash := pkg.NewRecommendHashConfig()
+	hashedPass := hash.GenerateHash(body.NewPassword)
+
+	if err := a.ar.ForgotPassword(ctx, model.User{
+		Email:    email,
+		Password: hashedPass,
+	}); err != nil {
+		return err
+	}
+
+	return nil
+}

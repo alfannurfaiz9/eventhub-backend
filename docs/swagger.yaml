@@ -9,6 +9,15 @@ definitions:
         example: false
         type: boolean
     type: object
+  dto.ForgotPassword:
+    properties:
+      email:
+        example: youremail@gmail.com
+        type: string
+      new_password:
+        example: yournewpassword
+        type: string
+    type: object
   dto.JoinEvent:
     properties:
       event_id:
@@ -17,7 +26,7 @@ definitions:
   dto.Login:
     properties:
       email:
-        example: youemail@gmail.com
+        example: youremail@gmail.com
         type: string
       password:
         example: yourpassword
@@ -26,7 +35,7 @@ definitions:
   dto.Register:
     properties:
       email:
-        example: youemail@gmail.com
+        example: youremail@gmail.com
         type: string
       full_name:
         example: your name
@@ -93,6 +102,38 @@ paths:
       summary: Get admin dashboard all users
       tags:
       - admin
+  /auth/forgot-password:
+    post:
+      description: Set new password
+      parameters:
+      - description: body to change password
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ForgotPassword'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Forgot password
+      tags:
+      - auth
   /auth/login:
     post:
       consumes:

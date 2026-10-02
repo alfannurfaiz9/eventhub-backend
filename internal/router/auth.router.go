@@ -22,4 +22,5 @@ func initAuthRouter(router *gin.Engine, db *pgxpool.Pool, rdb *redis.Client) {
 	r.POST("register", ac.Register)
 	r.POST("login", ac.Login)
 	r.POST("logout", am.CheckToken, ac.Logout)
+	r.POST("forgot-password", ac.ForgotPassword)
 }

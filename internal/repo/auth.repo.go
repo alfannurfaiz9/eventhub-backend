@@ -48,3 +48,41 @@ func (a *AuthRepo) Register(ctx context.Context, body model.User) error {
 
 	return nil
 }
+
+func (a *AuthRepo) FindUserByEmail(ctx context.Context, body model.User) (string, error) {
+	sql := `
+	SELECT email
+	FROM users
+	WHERE email = $1`
+	args := []any{body.Email}
+
+	var data model.User
+	if err := a.db.QueryRow(ctx, sql, args...).Scan(
+		&data.Email,
+	); err != nil {
+		return "", err
+	}
+
+	return data.Email, nil
+}
+
+func (a *AuthRepo) ForgotPassword(ctx context.Context, body model.User) error {
+	sql := `
+	UPDATE users
+	SET password = $1
+	WHERE email = $2`
+
+	args := []any{body.Password, body.Email}
+
+	cmd, err := a.db.Exec(ctx, sql, args...)
+
+	if err != nil {
+		return err
+	}
+
+	if cmd.RowsAffected() == 0 {
+		return errors.New("no rows affected")
+	}
+
+	return nil
+}

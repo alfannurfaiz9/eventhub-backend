@@ -170,3 +170,56 @@ func (a *AuthController) Logout(ctx *gin.Context) {
 		Message: "successfully loged out",
 	})
 }
+
+// ForgotPassword
+//
+// @Summary			Forgot password
+// @Description		Set new password
+// @Tags			auth
+// @Produce			json
+// @Router			/auth/forgot-password	[post]
+// @Param			data	body	dto.ForgotPassword	true	"body to change password"
+// @Success			200		{object}	dto.Response
+// @Failure			401		{object}	dto.ErrorResponse
+// @Failure			404		{object}	dto.ErrorResponse
+// @Failure			500		{object}	dto.ErrorResponse
+func (a *AuthController) ForgotPassword(ctx *gin.Context) {
+	var body dto.ForgotPassword
+
+	if err := ctx.ShouldBindWith(&body, binding.JSON); err != nil {
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
+			Success: false,
+			Message: "internal server error",
+		})
+		return
+	}
+
+	if err := a.as.ForgotPassword(ctx, body); err != nil {
+		if errors.Is(err, custom_error.UserNotFound) {
+			ctx.JSON(http.StatusNotFound, dto.ErrorResponse{
+				Success: false,
+				Message: err.Error(),
+			})
+			return
+		}
+
+		if errors.Is(err, custom_error.ForgotPasswordInvalidLength) {
+			ctx.JSON(http.StatusUnauthorized, dto.ErrorResponse{
+				Success: false,
+				Message: err.Error(),
+			})
+			return
+		}
+
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
+			Success: false,
+			Message: "internal server error",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, dto.Response{
+		Success: true,
+		Message: "password successfully change",
+	})
+}
