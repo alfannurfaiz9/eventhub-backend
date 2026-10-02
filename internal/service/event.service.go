@@ -44,6 +44,26 @@ func (e *EventService) GetEvents(ctx context.Context, search, location, category
 	return data, err
 }
 
+func (e *EventService) GetEventByPage(ctx context.Context, page int) ([]dto.EventList, error) {
+	result, err := e.er.GetEventByPage(ctx, page)
+
+	data := make([]dto.EventList, 0, len(result))
+
+	for _, v := range result {
+		data = append(data, dto.EventList{
+			Title:         v.Event.Title,
+			ImgUrl:        v.Event.ImgUrl,
+			Category:      v.Category.Name,
+			StartAt:       v.Event.StartAt,
+			Location:      v.Location.Name,
+			TotalAttendee: v.TotalAttendee,
+			Capacity:      v.Capacity,
+		})
+	}
+
+	return data, err
+}
+
 func (e *EventService) GetEventDetail(ctx context.Context, id int) (dto.EventDetail, error) {
 	result, err := e.er.GetEventDetail(ctx, id)
 

@@ -20,6 +20,7 @@ func initEventRouter(router *gin.Engine, db *pgxpool.Pool, rdb *redis.Client) {
 	ec := controller.NewEventController(es)
 
 	r.GET("", ec.GetEvents)
+	r.GET("page/:page", ec.GetEventByPage)
 	r.GET("upcoming", ec.GetUpcomingEvent)
 	r.GET("detail/:id", ec.GetEventDetail)
 	r.POST("join", am.CheckToken, am.UserMiddleware, ec.JoinEvent)

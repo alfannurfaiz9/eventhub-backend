@@ -61,6 +61,47 @@ func (e *EventController) GetEvents(ctx *gin.Context) {
 	})
 }
 
+// GetEventByPage
+//
+// @Summary			Get event by page
+// @Description		Get event by page
+// @Tags			events
+// @Produce			json
+// @Router			/events/page/{page}	[get]
+// @Param        	page   path      int  true  "Event Page"
+// @Success			200		{object}	dto.Response
+// @Failure			500		{object}	dto.ErrorResponse
+func (e *EventController) GetEventByPage(ctx *gin.Context) {
+	page := ctx.Param("page")
+	intPage, err := strconv.Atoi(page)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
+			Success: false,
+			Message: "internal server error",
+		})
+
+		return
+	}
+
+	events, err := e.es.GetEventByPage(ctx.Request.Context(), intPage)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
+			Success: false,
+			Message: "internal server error",
+		})
+
+		return
+	}
+
+	ctx.JSON(http.StatusOK, dto.Response{
+		Success: true,
+		Data:    events,
+		Message: "successfully get event",
+	})
+}
+
 // GetEventDetail
 //
 // @Summary			Get event detail

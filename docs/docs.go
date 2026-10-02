@@ -190,6 +190,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/dto.Response"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -660,6 +666,41 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.JoinEvent"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/events/page/{page}": {
+            "get": {
+                "description": "Get event by page",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "events"
+                ],
+                "summary": "Get event by page",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Event Page",
+                        "name": "page",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
