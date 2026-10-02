@@ -51,7 +51,7 @@ func (a *AuthMiddleWare) CheckToken(ctx *gin.Context) {
 		return
 	}
 
-	blacklistRedis, err := a.rdb.Get(ctx, "alfan:token").Result()
+	blacklistRedis, err := a.rdb.Get(ctx, "eventhub:blacklist_token").Result()
 
 	if err != nil {
 		if errors.Is(err, redis.Nil) {

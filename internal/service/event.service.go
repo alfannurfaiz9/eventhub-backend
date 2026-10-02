@@ -2,9 +2,7 @@ package service
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
-	"log"
 
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/dto"
 	custom_error "github.com/alfannurfaiz9/eventhub-backend.git/internal/error"
@@ -27,21 +25,6 @@ func NewEventService(er *repo.EventRepo, rdb *redis.Client) *EventService {
 }
 
 func (e *EventService) GetEvents(ctx context.Context, search, location, category string) ([]dto.EventList, error) {
-	if val, err := e.rdb.Get(ctx, "alfan:event").Result(); err != nil {
-		if errors.Is(err, redis.Nil) {
-			log.Println("redis key not exist")
-		} else {
-			log.Println(err.Error())
-		}
-	} else {
-		var redisVal []dto.EventList
-		if err := json.Unmarshal([]byte(val), &redisVal); err != nil {
-			log.Println(err.Error())
-		}
-
-		return redisVal, nil
-	}
-
 	result, err := e.er.GetEvents(ctx, search, location, category)
 
 	data := make([]dto.EventList, 0, len(result))
@@ -56,15 +39,6 @@ func (e *EventService) GetEvents(ctx context.Context, search, location, category
 			TotalAttendee: v.TotalAttendee,
 			Capacity:      v.Capacity,
 		})
-	}
-
-	jsondata, err := json.Marshal(data)
-	if err != nil {
-		panic(err)
-	}
-
-	if err := e.rdb.Set(ctx, "alfan:event", jsondata, 0).Err(); err != nil {
-		panic(err)
 	}
 
 	return data, err

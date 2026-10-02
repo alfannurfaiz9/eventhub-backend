@@ -6,6 +6,7 @@ import (
 	"errors"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/dto"
 	custom_error "github.com/alfannurfaiz9/eventhub-backend.git/internal/error"
@@ -78,7 +79,7 @@ func (a *AuthService) Login(ctx context.Context, body dto.Login) (string, error)
 }
 
 func (a *AuthService) Logout(ctx context.Context, token string) error {
-	redisToken, err := a.rdb.Get(ctx, "alfan:token").Result()
+	redisToken, err := a.rdb.Get(ctx, "eventhub:blacklist_token").Result()
 	if err != nil {
 		log.Println(err)
 	} else {
@@ -94,7 +95,7 @@ func (a *AuthService) Logout(ctx context.Context, token string) error {
 			return err
 		}
 
-		if err := a.rdb.Set(ctx, "alfan:token", tokenJson, 0).Err(); err != nil {
+		if err := a.rdb.Set(ctx, "eventhub:blacklist_token", tokenJson, 0).Err(); err != nil {
 			return err
 		}
 
@@ -108,7 +109,7 @@ func (a *AuthService) Logout(ctx context.Context, token string) error {
 		return err
 	}
 
-	if err := a.rdb.Set(ctx, "alfan:token", tokenJson, 0).Err(); err != nil {
+	if err := a.rdb.Set(ctx, "eventhub:blacklist_token", tokenJson, 5*time.Minute).Err(); err != nil {
 		return err
 	}
 
