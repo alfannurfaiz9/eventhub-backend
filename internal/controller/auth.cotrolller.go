@@ -143,6 +143,16 @@ func (a *AuthController) Login(ctx *gin.Context) {
 	})
 }
 
+// Logout
+//
+// @Summary			Logout
+// @Description		Logout
+// @Tags			auth
+// @Produce			json
+// @Router			/auth/logout	[post]
+// @Security		BearerToken
+// @Success			200		{object}	dto.Response
+// @Failure			500		{object}	dto.ErrorResponse
 func (a *AuthController) Logout(ctx *gin.Context) {
 	token := ctx.GetHeader("Authorization")
 
