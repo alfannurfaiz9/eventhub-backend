@@ -117,6 +117,7 @@ func (c *CommunityController) GetCommunityDetail(ctx *gin.Context) {
 // @Router			/communities/{id}/events	[get]
 // @Param        	id   path      int  true  "Community ID"
 // @Success			200		{object}	dto.Response
+// @Failure			404		{object}	dto.ErrorResponse
 // @Failure			500		{object}	dto.ErrorResponse
 func (c *CommunityController) GetCommunityEvent(ctx *gin.Context) {
 	param := ctx.Param("id")
@@ -125,6 +126,14 @@ func (c *CommunityController) GetCommunityEvent(ctx *gin.Context) {
 
 	if err != nil {
 		log.Println(err.Error())
+		if errors.Is(err, custom_error.CommunityNotFound) {
+			ctx.JSON(http.StatusNotFound, dto.ErrorResponse{
+				Success: false,
+				Message: err.Error(),
+			})
+
+			return
+		}
 		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
 			Message: "internal server error",

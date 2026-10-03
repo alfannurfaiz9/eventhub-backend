@@ -70,6 +70,15 @@ func (c *CommunityService) GetCommunityDetail(ctx context.Context, id int) (dto.
 }
 
 func (c *CommunityService) GetCommunityEvent(ctx context.Context, id int) ([]dto.EventList, error) {
+	_, err := c.cr.GetCommunityDetail(ctx, id)
+
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, custom_error.CommunityNotFound
+		}
+		return nil, err
+	}
+
 	result, err := c.cr.GetCommunityEvent(ctx, id)
 
 	data := make([]dto.EventList, 0, len(result))
