@@ -18,7 +18,7 @@ func NewUserRepo(db *pgxpool.Pool) *UserRepo {
 	}
 }
 
-func (u *UserRepo) GetUserInfo(ctx context.Context, id int) (model.User, error) {
+func (u *UserRepo) GetUserProfile(ctx context.Context, id int) (model.User, error) {
 	sql := "SELECT full_name, email, img_url, address, bio, role from users WHERE id = $1"
 	args := []any{id}
 

@@ -22,7 +22,7 @@ func initUserRouter(router *gin.Engine, db *pgxpool.Pool, rdb *redis.Client) {
 	r.Use(am.CheckToken)
 
 	r.GET("info", am.UserMiddleware, uc.GetUserInformation)
-	r.GET("profile", am.UserMiddleware, uc.GetUserInfo)
+	r.GET("profile", am.UserMiddleware, uc.GetUserProfile)
 	r.GET("event", am.UserMiddleware, uc.GetMyEvent)
 	r.GET("notification", uc.GetNotification)
 	r.POST("change-password", uc.ChangeUserPassword)

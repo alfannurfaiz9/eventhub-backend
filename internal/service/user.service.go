@@ -20,8 +20,8 @@ func NewUserService(ur *repo.UserRepo) *UserService {
 	}
 }
 
-func (u *UserService) GetUserInfo(ctx context.Context, id int) (dto.User, error) {
-	result, err := u.ur.GetUserInfo(ctx, id)
+func (u *UserService) GetUserProfile(ctx context.Context, id int) (dto.User, error) {
+	result, err := u.ur.GetUserProfile(ctx, id)
 
 	data := dto.User{
 		FullName: result.FullName,
