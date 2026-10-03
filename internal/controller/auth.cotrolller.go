@@ -166,7 +166,7 @@ func (a *AuthController) Logout(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, dto.Response{
+	ctx.JSON(http.StatusNoContent, dto.Response{
 		Success: true,
 		Message: "successfully loged out",
 	})
