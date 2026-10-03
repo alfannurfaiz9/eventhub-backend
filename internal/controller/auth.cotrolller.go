@@ -148,7 +148,6 @@ func (a *AuthController) Login(ctx *gin.Context) {
 // @Summary			Logout
 // @Description		Logout
 // @Tags			auth
-// @Produce			json
 // @Router			/auth/logout	[post]
 // @Security		BearerToken
 // @Success			204		{object}	dto.Response

@@ -103,9 +103,24 @@ func (u *UserRepo) GetNotification(ctx context.Context, id int) ([]model.Notific
 	return notifications, nil
 }
 
-func (u *UserRepo) ChangeUserPassword(ctx context.Context, body model.User, id int) error {
-	sql := "UPDATE users SET password = $1 WHERE id = $2"
-	args := []any{body.Password, id}
+func (u *UserRepo) FindUser(ctx context.Context, id int) (model.User, error) {
+	sql := "SELECT id, email, password, role FROM users WHERE id=$1"
+	args := []any{id}
+
+	var data model.User
+	if err := u.db.QueryRow(ctx, sql, args...).Scan(&data.Id, &data.Email, &data.Password, &data.Role); err != nil {
+		return model.User{}, err
+	}
+
+	return data, nil
+}
+
+func (u *UserRepo) ChangeUserProfile(ctx context.Context, body model.User, id int) error {
+	sql := `
+	UPDATE users
+	SET full_name = COALESCE(NULLIF($1, ''), full_name), img_url = COALESCE(NULLIF($2, ''), img_url), address = COALESCE(NULLIF($3, ''), address), bio = COALESCE(NULLIF($4, ''), bio), password = COALESCE(NULLIF($5, ''), password)
+	WHERE id = $6`
+	args := []any{body.FullName, body.ImgUrl, body.Address, body.Bio, body.Password, id}
 
 	cmd, err := u.db.Exec(ctx, sql, args...)
 

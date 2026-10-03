@@ -112,8 +112,20 @@ func (u *UserController) GetNotification(ctx *gin.Context) {
 	})
 }
 
-func (u *UserController) ChangeUserPassword(ctx *gin.Context) {
-	var body dto.User
+// ChangeUserProfile
+//
+// @Summary			Change user profile
+// @Description		Change user profile
+// @Tags			user
+// @Router			/user/change-profile		[patch]
+// @Security		BearerToken
+// @Param			data	body	dto.UpdateProfile	true	"body to change profile"
+// @Success			200		{object}	dto.Response
+// @Failure			401		{object}	dto.ErrorResponse
+// @Failure			406		{object}	dto.ErrorResponse
+// @Failure			500		{object}	dto.ErrorResponse
+func (u *UserController) ChangeUserProfile(ctx *gin.Context) {
+	var body dto.UpdateProfile
 
 	if err := ctx.ShouldBindWith(&body, binding.JSON); err != nil {
 		log.Println(err.Error())
@@ -128,9 +140,36 @@ func (u *UserController) ChangeUserPassword(ctx *gin.Context) {
 	token, _ := ctx.Get("token")
 	claims, _ := token.(pkg.JWTClaims)
 
-	if err := u.us.ChangeUserPassword(ctx.Request.Context(), body, claims.Id); err != nil {
+	if err := u.us.ChangeUserProfile(ctx.Request.Context(), body, claims.Id); err != nil {
 		log.Println(err.Error())
-		ctx.JSON(http.StatusNotAcceptable, dto.ErrorResponse{
+		if errors.Is(err, custom_error.NoRowsAffected) {
+			ctx.JSON(http.StatusUnauthorized, dto.ErrorResponse{
+				Success: false,
+				Message: err.Error(),
+			})
+
+			return
+		}
+
+		if errors.Is(err, custom_error.ChangeUserrInvalidLength) {
+			ctx.JSON(http.StatusNotAcceptable, dto.ErrorResponse{
+				Success: false,
+				Message: err.Error(),
+			})
+
+			return
+		}
+
+		if errors.Is(err, custom_error.ChangeUserInvalidPassword) {
+			ctx.JSON(http.StatusNotAcceptable, dto.ErrorResponse{
+				Success: false,
+				Message: err.Error(),
+			})
+
+			return
+		}
+
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
 			Message: "internal server error",
 		})
@@ -140,7 +179,7 @@ func (u *UserController) ChangeUserPassword(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, dto.Response{
 		Success: true,
-		Message: "password successfully changed",
+		Message: "profile updated successfully",
 	})
 }
 

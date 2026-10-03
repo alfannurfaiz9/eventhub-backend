@@ -176,9 +176,6 @@ const docTemplate = `{
                     }
                 ],
                 "description": "Logout",
-                "produces": [
-                    "application/json"
-                ],
                 "tags": [
                     "auth"
                 ],
@@ -880,6 +877,57 @@ const docTemplate = `{
                 }
             }
         },
+        "/user/change-profile": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerToken": []
+                    }
+                ],
+                "description": "Change user profile",
+                "tags": [
+                    "user"
+                ],
+                "summary": "Change user profile",
+                "parameters": [
+                    {
+                        "description": "body to change profile",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateProfile"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "406": {
+                        "description": "Not Acceptable",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/user/info": {
             "get": {
                 "security": [
@@ -1023,6 +1071,29 @@ const docTemplate = `{
                 "success": {
                     "type": "boolean",
                     "example": true
+                }
+            }
+        },
+        "dto.UpdateProfile": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "bio": {
+                    "type": "string"
+                },
+                "current_password": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "img_url": {
+                    "type": "string"
+                },
+                "new_password": {
+                    "type": "string"
                 }
             }
         }

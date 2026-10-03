@@ -22,6 +22,15 @@ type UserProfile struct {
 	Role     string  `json:"role"`
 }
 
+type UpdateProfile struct {
+	FullName        string  `json:"full_name"`
+	ImgUrl          *string `json:"img_url"`
+	Address         *string `json:"address"`
+	Bio             *string `json:"bio"`
+	CurrentPassword string  `json:"current_password"`
+	NewPassword     string  `json:"new_password"`
+}
+
 type UserInformation struct {
 	FullName string  `json:"full_name"`
 	Email    string  `json:"email"`
