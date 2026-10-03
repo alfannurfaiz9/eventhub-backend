@@ -78,8 +78,8 @@ func (e *EventService) GetEventDetail(ctx context.Context, id int) (dto.EventDet
 	return data, nil
 }
 
-func (e *EventService) JoinEvent(ctx context.Context, userId int, body dto.JoinEvent) error {
-	if err := e.er.JoinEvent(ctx, userId, model.UserEvent{EventId: body.EventId}); err != nil {
+func (e *EventService) JoinEvent(ctx context.Context, userId int, event_id int) error {
+	if err := e.er.JoinEvent(ctx, userId, event_id); err != nil {
 		return err
 	}
 

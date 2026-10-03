@@ -121,27 +121,18 @@ func (e *EventController) GetEventDetail(ctx *gin.Context) {
 // @Description		Join to specified event
 // @Tags			events
 // @Produce			json
-// @Router			/events/join		[post]
-// @Param			data	body		dto.JoinEvent	true	"body to join event"
+// @Router			/events/{id}/join		[post]
+// @Param        	id   path      int  true  "Event ID"
 // @Security		BearerToken
 // @Success			200		{object}	dto.Response
 // @Failure			500		{object}	dto.ErrorResponse
 func (e *EventController) JoinEvent(ctx *gin.Context) {
 	token, _ := ctx.Get("token")
 	claims, _ := token.(pkg.JWTClaims)
+	eventId := ctx.Param("event_id")
+	eIdInt, _ := strconv.Atoi(eventId)
 
-	var body dto.JoinEvent
-	if err := ctx.ShouldBindWith(&body, binding.JSON); err != nil {
-		log.Println(err.Error())
-		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
-			Success: false,
-			Message: "internal server error",
-		})
-
-		return
-	}
-
-	err := e.es.JoinEvent(ctx.Request.Context(), claims.Id, body)
+	err := e.es.JoinEvent(ctx.Request.Context(), claims.Id, eIdInt)
 
 	if err != nil {
 		log.Println(err.Error())

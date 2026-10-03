@@ -430,6 +430,31 @@ paths:
       summary: Get all event
       tags:
       - events
+  /events/{id}/join:
+    post:
+      description: Join to specified event
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerToken: []
+      summary: Join to event
+      tags:
+      - events
   /events/detail/{id}:
     get:
       description: Get event detail
@@ -455,32 +480,6 @@ paths:
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
       summary: Get event detail
-      tags:
-      - events
-  /events/join:
-    post:
-      description: Join to specified event
-      parameters:
-      - description: body to join event
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/dto.JoinEvent'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/dto.ErrorResponse'
-      security:
-      - BearerToken: []
-      summary: Join to event
       tags:
       - events
   /events/leave:

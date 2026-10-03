@@ -91,9 +91,9 @@ func (e *EventRepo) GetEventDetail(ctx context.Context, id int) (model.EventDeta
 	return data, nil
 }
 
-func (e *EventRepo) JoinEvent(ctx context.Context, user_id int, body model.UserEvent) error {
+func (e *EventRepo) JoinEvent(ctx context.Context, user_id int, event_id int) error {
 	sql := "INSERT INTO user_event(user_id, event_id) VALUES($1, $2)"
-	args := []any{user_id, body.EventId}
+	args := []any{user_id, event_id}
 
 	cmd, err := e.db.Exec(ctx, sql, args...)
 
