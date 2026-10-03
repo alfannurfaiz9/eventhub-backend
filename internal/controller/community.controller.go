@@ -250,8 +250,8 @@ func (c *CommunityController) JoinCommunity(ctx *gin.Context) {
 // @Description		Leave specified community
 // @Tags			communities
 // @Produce			json
-// @Router			/communities/leave		[delete]
-// @Param			data	body		dto.UserCommunity	true	"body to leave community"
+// @Router			/communities/{id}/leave		[delete]
+// @Param        	id   path      int  true  "Community ID"
 // @Security		BearerToken
 // @Success			200		{object}	dto.Response
 // @Failure			401		{object}	dto.ErrorResponse
@@ -263,6 +263,7 @@ func (c *CommunityController) LeaveCommunity(ctx *gin.Context) {
 	cIdInt, _ := strconv.Atoi(communitytId)
 
 	if err := c.cs.LeaveCommunity(ctx.Request.Context(), claims.Id, cIdInt); err != nil {
+		log.Println(err.Error())
 		if errors.Is(err, custom_error.NoRowsAffected) {
 			ctx.JSON(http.StatusUnauthorized, dto.ErrorResponse{
 				Success: false,

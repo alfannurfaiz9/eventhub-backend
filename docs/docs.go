@@ -302,54 +302,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/communities/leave": {
-            "delete": {
-                "security": [
-                    {
-                        "BearerToken": []
-                    }
-                ],
-                "description": "Leave specified community",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "communities"
-                ],
-                "summary": "Leave community",
-                "parameters": [
-                    {
-                        "description": "body to leave community",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.UserCommunity"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dto.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/communities/popular": {
             "get": {
                 "description": "Get popular community",
@@ -467,6 +419,52 @@ const docTemplate = `{
                     "communities"
                 ],
                 "summary": "Join to community",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Community ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/communities/{id}/leave": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerToken": []
+                    }
+                ],
+                "description": "Leave specified community",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "communities"
+                ],
+                "summary": "Leave community",
                 "parameters": [
                     {
                         "type": "integer",
@@ -976,17 +974,6 @@ const docTemplate = `{
                 "success": {
                     "type": "boolean",
                     "example": true
-                }
-            }
-        },
-        "dto.UserCommunity": {
-            "type": "object",
-            "properties": {
-                "community_id": {
-                    "type": "integer"
-                },
-                "user_id": {
-                    "type": "integer"
                 }
             }
         }
