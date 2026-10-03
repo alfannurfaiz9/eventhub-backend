@@ -18,11 +18,6 @@ definitions:
         example: yournewpassword
         type: string
     type: object
-  dto.JoinEvent:
-    properties:
-      event_id:
-        type: integer
-    type: object
   dto.Login:
     properties:
       email:
@@ -446,6 +441,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
@@ -453,6 +452,35 @@ paths:
       security:
       - BearerToken: []
       summary: Join to event
+      tags:
+      - events
+  /events/{id}/leave:
+    delete:
+      description: Leave specified event
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerToken: []
+      summary: Leave event
       tags:
       - events
   /events/detail/{id}:
@@ -480,32 +508,6 @@ paths:
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
       summary: Get event detail
-      tags:
-      - events
-  /events/leave:
-    delete:
-      description: Leave specified event
-      parameters:
-      - description: body to leave event
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/dto.JoinEvent'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/dto.ErrorResponse'
-      security:
-      - BearerToken: []
-      summary: Leave event
       tags:
       - events
   /events/upcoming:

@@ -153,9 +153,9 @@ func (e *EventRepo) GetUpcomingEvent(ctx context.Context) ([]model.EventList, er
 	return events, nil
 }
 
-func (e *EventRepo) LeaveEvent(ctx context.Context, userId int, body model.UserEvent) error {
+func (e *EventRepo) LeaveEvent(ctx context.Context, userId int, eventId int) error {
 	sql := "DELETE FROM user_event WHERE user_id = $1 AND event_id = $2"
-	args := []any{userId, body.EventId}
+	args := []any{userId, eventId}
 
 	cmd, err := e.db.Exec(ctx, sql, args...)
 

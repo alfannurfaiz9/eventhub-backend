@@ -6,7 +6,6 @@ import (
 
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/dto"
 	custom_error "github.com/alfannurfaiz9/eventhub-backend.git/internal/error"
-	"github.com/alfannurfaiz9/eventhub-backend.git/internal/model"
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/repo"
 	"github.com/jackc/pgx/v5"
 	"github.com/redis/go-redis/v9"
@@ -106,8 +105,8 @@ func (e *EventService) GetUpcomingEvent(ctx context.Context) ([]dto.EventList, e
 	return data, err
 }
 
-func (e *EventService) LeaveEvent(ctx context.Context, user_id int, body dto.JoinEvent) error {
-	if err := e.er.LeaveEvent(ctx, user_id, model.UserEvent{EventId: body.EventId}); err != nil {
+func (e *EventService) LeaveEvent(ctx context.Context, user_id int, eventId int) error {
+	if err := e.er.LeaveEvent(ctx, user_id, eventId); err != nil {
 		return err
 	}
 

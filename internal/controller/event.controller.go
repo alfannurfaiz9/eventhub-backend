@@ -11,7 +11,6 @@ import (
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/service"
 	"github.com/alfannurfaiz9/eventhub-backend.git/pkg"
 	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
 )
 
 type EventController struct {
@@ -125,6 +124,7 @@ func (e *EventController) GetEventDetail(ctx *gin.Context) {
 // @Param        	id   path      int  true  "Event ID"
 // @Security		BearerToken
 // @Success			200		{object}	dto.Response
+// @Failure			401		{object}	dto.ErrorResponse
 // @Failure			500		{object}	dto.ErrorResponse
 func (e *EventController) JoinEvent(ctx *gin.Context) {
 	token, _ := ctx.Get("token")
@@ -185,27 +185,19 @@ func (e *EventController) GetUpcomingEvent(ctx *gin.Context) {
 // @Description		Leave specified event
 // @Tags			events
 // @Produce			json
-// @Router			/events/leave		[delete]
-// @Param			data	body		dto.JoinEvent	true	"body to leave event"
+// @Router			/events/{id}/leave		[delete]
+// @Param        	id   path      int  true  "Event ID"
 // @Security		BearerToken
 // @Success			200		{object}	dto.Response
+// @Failure			401		{object}	dto.ErrorResponse
 // @Failure			500		{object}	dto.ErrorResponse
 func (e *EventController) LeaveEvent(ctx *gin.Context) {
 	token, _ := ctx.Get("token")
 	claims, _ := token.(pkg.JWTClaims)
+	eventId := ctx.Param("event_id")
+	eIdInt, _ := strconv.Atoi(eventId)
 
-	var body dto.JoinEvent
-	if err := ctx.ShouldBindWith(&body, binding.JSON); err != nil {
-		log.Println(err.Error())
-		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
-			Success: false,
-			Message: "internal server error",
-		})
-
-		return
-	}
-
-	if err := e.es.LeaveEvent(ctx.Request.Context(), claims.Id, body); err != nil {
+	if err := e.es.LeaveEvent(ctx.Request.Context(), claims.Id, eIdInt); err != nil {
 		log.Println(err.Error())
 		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
