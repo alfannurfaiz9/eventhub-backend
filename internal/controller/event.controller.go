@@ -43,7 +43,7 @@ func (e *EventController) GetEvents(ctx *gin.Context) {
 	search := ctx.Query("search")
 	location := ctx.Query("location")
 	category := ctx.Query("category")
-	page := ctx.Query("page")
+	page := ctx.DefaultQuery("page", "1")
 	pageNum, _ := strconv.Atoi(page)
 
 	events, err := e.es.GetEvents(ctx.Request.Context(), search, location, category, pageNum)

@@ -24,11 +24,7 @@ func NewEventService(er *repo.EventRepo, rdb *redis.Client) *EventService {
 }
 
 func (e *EventService) GetEvents(ctx context.Context, search, location, category string, page int) ([]dto.EventList, error) {
-	if page == 0 {
-		page += 1
-	}
-
-	if page < 0 {
+	if page < 1 {
 		return nil, custom_error.EventErrorPage
 	}
 
