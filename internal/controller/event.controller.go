@@ -209,6 +209,49 @@ func (e *EventController) LeaveEvent(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, dto.Response{
 		Success: true,
-		Message: "Success",
+		Message: "succesfully leave event",
+	})
+}
+
+// SaveEvent
+//
+// @Summary			Save event
+// @Description		Save specified event
+// @Tags			events
+// @Produce			json
+// @Router			/events/{id}/save		[post]
+// @Param        	id   path      int  true  "Event ID"
+// @Security		BearerToken
+// @Success			200		{object}	dto.Response
+// @Failure			401		{object}	dto.ErrorResponse
+// @Failure			406		{object}	dto.ErrorResponse
+// @Failure			500		{object}	dto.ErrorResponse
+func (e *EventController) SaveEvent(ctx *gin.Context) {
+	token, _ := ctx.Get("token")
+	claims, _ := token.(pkg.JWTClaims)
+	eventId := ctx.Param("event_id")
+	eIdInt, _ := strconv.Atoi(eventId)
+
+	if err := e.es.SaveEvent(ctx.Request.Context(), claims.Id, eIdInt); err != nil {
+		log.Println(err.Error())
+		if errors.Is(err, custom_error.NoRowsAffected) {
+			ctx.JSON(http.StatusNotAcceptable, dto.ErrorResponse{
+				Success: false,
+				Message: err.Error(),
+			})
+			return
+		}
+
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
+			Success: false,
+			Message: "internal server error",
+		})
+
+		return
+	}
+
+	ctx.JSON(http.StatusOK, dto.Response{
+		Success: true,
+		Message: "successfully save event",
 	})
 }

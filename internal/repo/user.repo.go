@@ -2,8 +2,8 @@ package repo
 
 import (
 	"context"
-	"errors"
 
+	custom_error "github.com/alfannurfaiz9/eventhub-backend.git/internal/error"
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/model"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -114,7 +114,7 @@ func (u *UserRepo) ChangeUserPassword(ctx context.Context, body model.User, id i
 	}
 
 	if cmd.RowsAffected() == 0 {
-		return errors.New("no row affected")
+		return custom_error.NoRowsAffected
 	}
 
 	return nil

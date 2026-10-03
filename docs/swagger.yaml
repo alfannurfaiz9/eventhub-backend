@@ -483,6 +483,39 @@ paths:
       summary: Leave event
       tags:
       - events
+  /events/{id}/save:
+    post:
+      description: Save specified event
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "406":
+          description: Not Acceptable
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerToken: []
+      summary: Save event
+      tags:
+      - events
   /events/detail/{id}:
     get:
       description: Get event detail

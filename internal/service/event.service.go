@@ -112,3 +112,7 @@ func (e *EventService) LeaveEvent(ctx context.Context, user_id int, eventId int)
 
 	return nil
 }
+
+func (e *EventService) SaveEvent(ctx context.Context, userId, eventId int) error {
+	return e.er.SaveEvent(ctx, userId, eventId)
+}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	custom_error "github.com/alfannurfaiz9/eventhub-backend.git/internal/error"
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/model"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -166,6 +167,25 @@ func (e *EventRepo) LeaveEvent(ctx context.Context, userId int, eventId int) err
 	if cmd.RowsAffected() == 0 {
 		return errors.New("no row affected")
 
+	}
+
+	return nil
+}
+
+func (e *EventRepo) SaveEvent(ctx context.Context, userId, eventId int) error {
+	sql := `
+	INSERT INTO user_event
+	VALUES($1, $2)`
+	args := []any{userId, eventId}
+
+	cmd, err := e.db.Exec(ctx, sql, args...)
+
+	if err != nil {
+		return err
+	}
+
+	if cmd.RowsAffected() == 0 {
+		return custom_error.NoRowsAffected
 	}
 
 	return nil
