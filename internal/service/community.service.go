@@ -21,8 +21,16 @@ func NewCommunityService(cr *repo.CommunityRepo) *CommunityService {
 	}
 }
 
-func (c *CommunityService) GetCommunities(ctx context.Context, categories string) ([]dto.CommunityList, error) {
-	result, err := c.cr.GetCommunities(ctx, categories)
+func (c *CommunityService) GetCommunities(ctx context.Context, categories string, page int) ([]dto.CommunityList, error) {
+	if page < 1 {
+		return nil, custom_error.EventErrorPage
+	}
+
+	result, err := c.cr.GetCommunities(ctx, categories, page)
+
+	if err != nil {
+		return nil, err
+	}
 
 	data := make([]dto.CommunityList, 0, len(result))
 
@@ -37,7 +45,7 @@ func (c *CommunityService) GetCommunities(ctx context.Context, categories string
 		})
 	}
 
-	return data, err
+	return data, nil
 }
 
 func (c *CommunityService) GetCommunityDetail(ctx context.Context, id int) (dto.CommunityList, error) {
@@ -113,12 +121,8 @@ func (c *CommunityService) GetPopularCommunity(ctx context.Context) ([]dto.Commu
 	return data, err
 }
 
-func (c *CommunityService) JoinCommunity(ctx context.Context, userId int, body dto.UserCommunity) error {
-	if err := c.cr.JoinCommunity(ctx, userId, model.UserCommunity{CommunityId: body.CommunityId}); err != nil {
-		return err
-	}
-
-	return nil
+func (c *CommunityService) JoinCommunity(ctx context.Context, userId, communityId int) error {
+	return c.cr.JoinCommunity(ctx, userId, communityId)
 }
 
 func (c *CommunityService) LeaveCommunity(ctx context.Context, userId int, body dto.UserCommunity) error {

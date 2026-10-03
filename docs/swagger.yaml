@@ -169,8 +169,8 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "204":
+          description: No Content
           schema:
             $ref: '#/definitions/dto.Response'
         "401":
@@ -227,11 +227,20 @@ paths:
         in: query
         name: category
         type: string
+      - description: name page
+        format: page
+        in: query
+        name: page
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/dto.Response'
         "500":
@@ -291,6 +300,39 @@ paths:
       summary: Get community event
       tags:
       - communities
+  /communities/{id}/join:
+    post:
+      description: Join to specified community
+      parameters:
+      - description: Community ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerToken: []
+      summary: Join to community
+      tags:
+      - communities
   /communities/{id}/members:
     get:
       description: Get community member
@@ -314,32 +356,6 @@ paths:
       summary: Get community member
       tags:
       - communities
-  /communities/join:
-    post:
-      description: Join to specified community
-      parameters:
-      - description: body to join community
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/dto.UserCommunity'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/dto.ErrorResponse'
-      security:
-      - BearerToken: []
-      summary: Join to community
-      tags:
-      - communities
   /communities/leave:
     delete:
       description: Leave specified community
@@ -357,6 +373,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
@@ -443,6 +463,10 @@ paths:
             $ref: '#/definitions/dto.Response'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
         "500":

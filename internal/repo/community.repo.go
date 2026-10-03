@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	custom_error "github.com/alfannurfaiz9/eventhub-backend.git/internal/error"
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/model"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -18,7 +19,7 @@ func NewCommunityRepo(db *pgxpool.Pool) *CommunityRepo {
 	}
 }
 
-func (c *CommunityRepo) GetCommunities(ctx context.Context, categories string) ([]model.CommunityList, error) {
+func (c *CommunityRepo) GetCommunities(ctx context.Context, categories string, page int) ([]model.CommunityList, error) {
 	sql := `
 	SELECT communities.name, communities.img_url,communities.description, STRING_AGG(categories.name, ', '), COUNT(user_community.community_id), COUNT(events.id)
 	FROM communities
@@ -27,8 +28,11 @@ func (c *CommunityRepo) GetCommunities(ctx context.Context, categories string) (
 	LEFT JOIN user_community ON user_community.community_id = communities.id
 	LEFT JOIN events ON events.community_id = communities.id
 	WHERE categories.name ILIKE $1
-	GROUP BY communities.id, categories.id`
-	args := []any{"%" + categories + "%"}
+	GROUP BY communities.id, categories.id
+	LIMIT $2 OFFSET $3`
+	limit := 6
+	offset := limit * (page - 1)
+	args := []any{"%" + categories + "%", limit, offset}
 
 	rows, err := c.db.Query(ctx, sql, args...)
 
@@ -214,11 +218,11 @@ func (c *CommunityRepo) GetPopularCommunity(ctx context.Context) ([]model.Commun
 	return communities, nil
 }
 
-func (c *CommunityRepo) JoinCommunity(ctx context.Context, userId int, body model.UserCommunity) error {
+func (c *CommunityRepo) JoinCommunity(ctx context.Context, userId, communityId int) error {
 	sql := `
 	INSERT INTO user_community(user_id, community_id)
 	VALUES($1, $2)`
-	args := []any{userId, body.CommunityId}
+	args := []any{userId, communityId}
 
 	cmd, err := c.db.Exec(ctx, sql, args...)
 
@@ -227,7 +231,7 @@ func (c *CommunityRepo) JoinCommunity(ctx context.Context, userId int, body mode
 	}
 
 	if cmd.RowsAffected() == 0 {
-		return errors.New("no row affected")
+		return custom_error.NoRowsAffected
 	}
 
 	return nil

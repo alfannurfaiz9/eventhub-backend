@@ -125,6 +125,7 @@ func (e *EventController) GetEventDetail(ctx *gin.Context) {
 // @Security		BearerToken
 // @Success			200		{object}	dto.Response
 // @Failure			401		{object}	dto.ErrorResponse
+// @Failure			404		{object}	dto.ErrorResponse
 // @Failure			500		{object}	dto.ErrorResponse
 func (e *EventController) JoinEvent(ctx *gin.Context) {
 	token, _ := ctx.Get("token")
@@ -136,6 +137,15 @@ func (e *EventController) JoinEvent(ctx *gin.Context) {
 
 	if err != nil {
 		log.Println(err.Error())
+		if errors.Is(err, custom_error.NoRowsAffected) {
+			ctx.JSON(http.StatusUnauthorized, dto.ErrorResponse{
+				Success: false,
+				Message: err.Error(),
+			})
+
+			return
+		}
+
 		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
 			Message: "internal server error",

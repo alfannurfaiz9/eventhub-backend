@@ -32,16 +32,27 @@ func NewCommunityController(cs *service.CommunityService) *CommunityController {
 // @Produce			json
 //
 //	@Param        	category    query     string  false  "name category by category"  Format(category)
+//	@Param        	page    query     int  false  "name page"  Format(page)
 //
 // @Router			/communities	[get]
 // @Success			200		{object}	dto.Response
+// @Success			404		{object}	dto.Response
 // @Failure			500		{object}	dto.ErrorResponse
 func (c *CommunityController) GetCommunities(ctx *gin.Context) {
 	category := ctx.Query("category")
-	result, err := c.cs.GetCommunities(ctx.Request.Context(), category)
+	page := ctx.DefaultQuery("page", "1")
+	pageNum, _ := strconv.Atoi(page)
+	result, err := c.cs.GetCommunities(ctx.Request.Context(), category, pageNum)
 
 	if err != nil {
 		log.Println(err.Error())
+		if errors.Is(err, custom_error.EventErrorPage) {
+			ctx.JSON(http.StatusNotFound, dto.ErrorResponse{
+				Success: false,
+				Message: err.Error(),
+			})
+			return
+		}
 		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
 			Message: "internal server error",
@@ -195,30 +206,32 @@ func (c *CommunityController) GetPopularCommunity(ctx *gin.Context) {
 // @Description		Join to specified community
 // @Tags			communities
 // @Produce			json
-// @Router			/communities/join		[post]
-// @Param			data	body		dto.UserCommunity	true	"body to join community"
+// @Router			/communities/{id}/join		[post]
+// @Param        	id   path      int  true  "Community ID"
 // @Security		BearerToken
 // @Success			200		{object}	dto.Response
+// @Failure			401		{object}	dto.ErrorResponse
+// @Failure			404		{object}	dto.ErrorResponse
 // @Failure			500		{object}	dto.ErrorResponse
 func (c *CommunityController) JoinCommunity(ctx *gin.Context) {
 	token, _ := ctx.Get("token")
 	claims, _ := token.(pkg.JWTClaims)
+	communitytId := ctx.Param("community_id")
+	cIdInt, _ := strconv.Atoi(communitytId)
 
-	var body dto.UserCommunity
-	if err := ctx.ShouldBindWith(&body, binding.JSON); err != nil {
-		log.Println(err.Error())
-		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
-			Success: false,
-			Message: "internal server error",
-		})
-
-		return
-	}
-
-	err := c.cs.JoinCommunity(ctx.Request.Context(), claims.Id, body)
+	err := c.cs.JoinCommunity(ctx.Request.Context(), claims.Id, cIdInt)
 
 	if err != nil {
 		log.Println(err.Error())
+		if errors.Is(err, custom_error.NoRowsAffected) {
+			ctx.JSON(http.StatusUnauthorized, dto.ErrorResponse{
+				Success: false,
+				Message: err.Error(),
+			})
+
+			return
+		}
+
 		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
 			Message: "internal server error",
@@ -243,6 +256,7 @@ func (c *CommunityController) JoinCommunity(ctx *gin.Context) {
 // @Param			data	body		dto.UserCommunity	true	"body to leave community"
 // @Security		BearerToken
 // @Success			200		{object}	dto.Response
+// @Failure			404		{object}	dto.ErrorResponse
 // @Failure			500		{object}	dto.ErrorResponse
 func (c *CommunityController) LeaveCommunity(ctx *gin.Context) {
 	token, _ := ctx.Get("token")
