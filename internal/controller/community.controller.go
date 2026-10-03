@@ -11,7 +11,6 @@ import (
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/service"
 	"github.com/alfannurfaiz9/eventhub-backend.git/pkg"
 	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
 )
 
 type CommunityController struct {
@@ -211,7 +210,6 @@ func (c *CommunityController) GetPopularCommunity(ctx *gin.Context) {
 // @Security		BearerToken
 // @Success			200		{object}	dto.Response
 // @Failure			401		{object}	dto.ErrorResponse
-// @Failure			404		{object}	dto.ErrorResponse
 // @Failure			500		{object}	dto.ErrorResponse
 func (c *CommunityController) JoinCommunity(ctx *gin.Context) {
 	token, _ := ctx.Get("token")
@@ -256,28 +254,27 @@ func (c *CommunityController) JoinCommunity(ctx *gin.Context) {
 // @Param			data	body		dto.UserCommunity	true	"body to leave community"
 // @Security		BearerToken
 // @Success			200		{object}	dto.Response
-// @Failure			404		{object}	dto.ErrorResponse
+// @Failure			401		{object}	dto.ErrorResponse
 // @Failure			500		{object}	dto.ErrorResponse
 func (c *CommunityController) LeaveCommunity(ctx *gin.Context) {
 	token, _ := ctx.Get("token")
 	claims, _ := token.(pkg.JWTClaims)
+	communitytId := ctx.Param("community_id")
+	cIdInt, _ := strconv.Atoi(communitytId)
 
-	var body dto.UserCommunity
-	if err := ctx.ShouldBindWith(&body, binding.JSON); err != nil {
+	if err := c.cs.LeaveCommunity(ctx.Request.Context(), claims.Id, cIdInt); err != nil {
+		if errors.Is(err, custom_error.NoRowsAffected) {
+			ctx.JSON(http.StatusUnauthorized, dto.ErrorResponse{
+				Success: false,
+				Message: err.Error(),
+			})
+			return
+		}
+
 		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
 			Message: "internal server error",
 		})
-
-		return
-	}
-
-	if err := c.cs.LeaveCommunity(ctx.Request.Context(), claims.Id, body); err != nil {
-		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
-			Success: false,
-			Message: "internal server error",
-		})
-
 		return
 	}
 

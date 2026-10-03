@@ -26,5 +26,5 @@ func initCommunityRouter(router *gin.Engine, db *pgxpool.Pool, rdb *redis.Client
 	r.GET("popular", cc.GetPopularCommunity)
 
 	r.POST(":community_id/join", am.CheckToken, am.UserMiddleware, cc.JoinCommunity)
-	r.DELETE("leave", am.CheckToken, am.UserMiddleware, cc.LeaveCommunity)
+	r.DELETE(":community_id/leave", am.CheckToken, am.UserMiddleware, cc.LeaveCommunity)
 }

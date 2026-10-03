@@ -6,7 +6,6 @@ import (
 
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/dto"
 	custom_error "github.com/alfannurfaiz9/eventhub-backend.git/internal/error"
-	"github.com/alfannurfaiz9/eventhub-backend.git/internal/model"
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/repo"
 	"github.com/jackc/pgx/v5"
 )
@@ -125,10 +124,6 @@ func (c *CommunityService) JoinCommunity(ctx context.Context, userId, communityI
 	return c.cr.JoinCommunity(ctx, userId, communityId)
 }
 
-func (c *CommunityService) LeaveCommunity(ctx context.Context, userId int, body dto.UserCommunity) error {
-	if err := c.cr.LeaveCommunity(ctx, userId, model.UserCommunity{CommunityId: body.CommunityId}); err != nil {
-		return err
-	}
-
-	return nil
+func (c *CommunityService) LeaveCommunity(ctx context.Context, userId, communityId int) error {
+	return c.cr.LeaveCommunity(ctx, userId, communityId)
 }

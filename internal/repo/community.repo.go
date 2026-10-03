@@ -2,7 +2,6 @@ package repo
 
 import (
 	"context"
-	"errors"
 
 	custom_error "github.com/alfannurfaiz9/eventhub-backend.git/internal/error"
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/model"
@@ -237,9 +236,9 @@ func (c *CommunityRepo) JoinCommunity(ctx context.Context, userId, communityId i
 	return nil
 }
 
-func (c *CommunityRepo) LeaveCommunity(ctx context.Context, userId int, body model.UserCommunity) error {
+func (c *CommunityRepo) LeaveCommunity(ctx context.Context, userId, communityId int) error {
 	sql := "DELETE FROM user_community WHERE user_id = $1 AND community_id = $2"
-	args := []any{userId, body.CommunityId}
+	args := []any{userId, communityId}
 
 	cmd, err := c.db.Exec(ctx, sql, args...)
 
@@ -248,7 +247,7 @@ func (c *CommunityRepo) LeaveCommunity(ctx context.Context, userId int, body mod
 	}
 
 	if cmd.RowsAffected() == 0 {
-		return errors.New("no row affected")
+		return custom_error.NoRowsAffected
 
 	}
 
