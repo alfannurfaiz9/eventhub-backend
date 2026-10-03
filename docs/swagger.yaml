@@ -131,6 +131,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerToken: []
       summary: Forgot password
       tags:
       - auth
@@ -564,6 +566,29 @@ paths:
       summary: Get organizer dashboard all users
       tags:
       - organizer
+  /user/info:
+    get:
+      description: Get user information for header
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerToken: []
+      summary: Get user information
+      tags:
+      - user
 securityDefinitions:
   BearerToken:
     description: Bearer Token used as identity for accessing backend

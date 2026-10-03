@@ -20,8 +20,8 @@ func NewUserService(ur *repo.UserRepo) *UserService {
 	}
 }
 
-func (u *UserService) GetUserProfile(ctx context.Context, id int) (dto.User, error) {
-	result, err := u.ur.GetUserProfile(ctx, id)
+func (u *UserService) GetUserInfo(ctx context.Context, id int) (dto.User, error) {
+	result, err := u.ur.GetUserInfo(ctx, id)
 
 	data := dto.User{
 		FullName: result.FullName,
@@ -91,4 +91,16 @@ func (u *UserService) ChangeUserPassword(ctx context.Context, body dto.User, id 
 	}
 
 	return nil
+}
+
+func (u *UserService) GetUserInformation(ctx context.Context, id int) (dto.UserInformation, error) {
+	result, err := u.ur.GetUserInformation(ctx, id)
+
+	data := dto.UserInformation{
+		FullName: result.FullName,
+		Email:    result.Email,
+		ImgUrl:   result.ImgUrl,
+	}
+
+	return data, err
 }

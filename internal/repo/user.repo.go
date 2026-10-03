@@ -18,7 +18,7 @@ func NewUserRepo(db *pgxpool.Pool) *UserRepo {
 	}
 }
 
-func (u *UserRepo) GetUserProfile(ctx context.Context, id int) (model.User, error) {
+func (u *UserRepo) GetUserInfo(ctx context.Context, id int) (model.User, error) {
 	sql := "SELECT full_name, email, img_url, address, bio, role from users WHERE id = $1"
 	args := []any{id}
 
@@ -118,4 +118,23 @@ func (u *UserRepo) ChangeUserPassword(ctx context.Context, body model.User, id i
 	}
 
 	return nil
+}
+
+func (u *UserRepo) GetUserInformation(ctx context.Context, id int) (model.User, error) {
+	sql := `
+	SELECT full_name, email, img_url
+	FROM users
+	where id = $1`
+	args := []any{id}
+
+	var user model.User
+	if err := u.db.QueryRow(ctx, sql, args...).Scan(
+		&user.Email,
+		&user.Email,
+		&user.ImgUrl,
+	); err != nil {
+		return model.User{}, err
+	}
+
+	return user, nil
 }

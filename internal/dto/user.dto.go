@@ -13,6 +13,12 @@ type User struct {
 	Role     string  `json:"role"`
 }
 
+type UserInformation struct {
+	FullName string  `json:"full_name"`
+	Email    string  `json:"email"`
+	ImgUrl   *string `json:"img_url"`
+}
+
 type Notification struct {
 	Title       string    `json:"title"`
 	Description string    `json:"description"`

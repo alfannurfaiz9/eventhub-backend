@@ -23,11 +23,22 @@ func NewUserController(us *service.UserService) *UserController {
 	}
 }
 
-func (u *UserController) GetUserProfile(ctx *gin.Context) {
+// GetUserInfo
+//
+// @Summary			Get user information
+// @Description		Get user information for header
+// @Tags			user
+// @Produce			json
+// @Router			/user/info		[get]
+// @Security		BearerToken
+// @Success			200		{object}	dto.Response
+// @Failure			401		{object}	dto.ErrorResponse
+// @Failure			500		{object}	dto.ErrorResponse
+func (u *UserController) GetUserInfo(ctx *gin.Context) {
 	token, _ := ctx.Get("token")
 	claims, _ := token.(pkg.JWTClaims)
 
-	result, err := u.us.GetUserProfile(ctx.Request.Context(), claims.Id)
+	result, err := u.us.GetUserInfo(ctx.Request.Context(), claims.Id)
 
 	if err != nil {
 		log.Println(err.Error())
@@ -130,5 +141,24 @@ func (u *UserController) ChangeUserPassword(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, dto.Response{
 		Success: true,
 		Message: "password successfully changed",
+	})
+}
+
+func (u *UserController) GetUserInformation(ctx *gin.Context) {
+	token, _ := ctx.Get("token")
+	claims, _ := token.(pkg.JWTClaims)
+	result, err := u.us.GetUserInformation(ctx.Request.Context(), claims.Id)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
+			Success: false,
+			Message: "internal server error",
+		})
+	}
+
+	ctx.JSON(http.StatusOK, dto.Response{
+		Success: true,
+		Data:    result,
+		Message: "successfully get user information",
 	})
 }

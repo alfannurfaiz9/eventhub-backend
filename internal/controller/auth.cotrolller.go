@@ -180,6 +180,7 @@ func (a *AuthController) Logout(ctx *gin.Context) {
 // @Produce			json
 // @Router			/auth/forgot-password	[post]
 // @Param			data	body	dto.ForgotPassword	true	"body to change password"
+// @Security		BearerToken
 // @Success			200		{object}	dto.Response
 // @Failure			401		{object}	dto.ErrorResponse
 // @Failure			404		{object}	dto.ErrorResponse
