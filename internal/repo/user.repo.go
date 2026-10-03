@@ -129,7 +129,7 @@ func (u *UserRepo) GetUserInformation(ctx context.Context, id int) (model.User, 
 
 	var user model.User
 	if err := u.db.QueryRow(ctx, sql, args...).Scan(
-		&user.Email,
+		&user.FullName,
 		&user.Email,
 		&user.ImgUrl,
 	); err != nil {
