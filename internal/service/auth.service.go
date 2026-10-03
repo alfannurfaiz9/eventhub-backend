@@ -95,7 +95,7 @@ func (a *AuthService) Logout(ctx context.Context, token string) error {
 			return err
 		}
 
-		if err := a.rdb.Set(ctx, "eventhub:blacklist_token", tokenJson, 0).Err(); err != nil {
+		if err := a.rdb.Set(ctx, "eventhub:blacklist_token", tokenJson, 5*time.Minute).Err(); err != nil {
 			return err
 		}
 
