@@ -531,15 +531,22 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "format": "location",
-                        "description": "name location by location",
+                        "description": "name location",
                         "name": "location",
                         "in": "query"
                     },
                     {
                         "type": "string",
                         "format": "category",
-                        "description": "name category by category",
+                        "description": "name category",
                         "name": "category",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "format": "page",
+                        "description": "name page",
+                        "name": "page",
                         "in": "query"
                     }
                 ],
@@ -548,6 +555,12 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
                         }
                     },
                     "500": {
@@ -666,41 +679,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.JoinEvent"
                         }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dto.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/events/page/{page}": {
-            "get": {
-                "description": "Get event by page",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "events"
-                ],
-                "summary": "Get event by page",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Event Page",
-                        "name": "page",
-                        "in": "path",
-                        "required": true
                     }
                 ],
                 "responses": {

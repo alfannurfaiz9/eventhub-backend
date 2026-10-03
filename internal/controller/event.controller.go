@@ -32,61 +32,32 @@ func NewEventController(es *service.EventService) *EventController {
 // @Produce			json
 //
 //	@Param        	search    query     string  false  "name search by search"  Format(search)
-//	@Param        	location    query     string  false  "name location by location"  Format(location)
-//	@Param        	category    query     string  false  "name category by category"  Format(category)
+//	@Param        	location    query     string  false  "name location"  Format(location)
+//	@Param        	category    query     string  false  "name category"  Format(category)
+//	@Param        	page    query     int  false  "name page"  Format(page)
 //
 // @Router			/events	[get]
 // @Success			200		{object}	dto.Response
+// @Failure			404		{object}	dto.ErrorResponse
 // @Failure			500		{object}	dto.ErrorResponse
 func (e *EventController) GetEvents(ctx *gin.Context) {
 	search := ctx.Query("search")
 	location := ctx.Query("location")
 	category := ctx.Query("category")
+	page := ctx.Query("page")
+	pageNum, _ := strconv.Atoi(page)
 
-	events, err := e.es.GetEvents(ctx.Request.Context(), search, location, category)
-
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
-			Success: false,
-			Message: "internal server error",
-		})
-
-		return
-	}
-
-	ctx.JSON(http.StatusOK, dto.Response{
-		Success: true,
-		Data:    events,
-		Message: "successfully get event",
-	})
-}
-
-// GetEventByPage
-//
-// @Summary			Get event by page
-// @Description		Get event by page
-// @Tags			events
-// @Produce			json
-// @Router			/events/page/{page}	[get]
-// @Param        	page   path      int  true  "Event Page"
-// @Success			200		{object}	dto.Response
-// @Failure			500		{object}	dto.ErrorResponse
-func (e *EventController) GetEventByPage(ctx *gin.Context) {
-	page := ctx.Param("page")
-	intPage, err := strconv.Atoi(page)
+	events, err := e.es.GetEvents(ctx.Request.Context(), search, location, category, pageNum)
 
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
-			Success: false,
-			Message: "internal server error",
-		})
+		if errors.Is(err, custom_error.EventErrorPage) {
+			ctx.JSON(http.StatusNotFound, dto.ErrorResponse{
+				Success: false,
+				Message: err.Error(),
+			})
+			return
+		}
 
-		return
-	}
-
-	events, err := e.es.GetEventByPage(ctx.Request.Context(), intPage)
-
-	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
 			Message: "internal server error",

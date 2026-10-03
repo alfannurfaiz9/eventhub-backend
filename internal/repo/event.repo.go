@@ -18,7 +18,7 @@ func NewEventRepo(db *pgxpool.Pool) *EventRepo {
 	}
 }
 
-func (e *EventRepo) GetEvents(ctx context.Context, search, location, category string) ([]model.EventList, error) {
+func (e *EventRepo) GetEvents(ctx context.Context, search, location, category string, page int) ([]model.EventList, error) {
 	sql := `
 	SELECT events.title, events.img_url, STRING_AGG(categories.name, ', '), events.start_at, locations.name, COUNT(user_event.event_id), events.capacity 
 	FROM events 
@@ -30,56 +30,10 @@ func (e *EventRepo) GetEvents(ctx context.Context, search, location, category st
 	WHERE events.title ILIKE $1 AND locations.name ILIKE $2
 	GROUP BY events.id, categories.id, locations.id
 	HAVING STRING_AGG(categories.name, ', ') ILIKE $3
-	LIMIT 6`
-	args := []any{"%" + search + "%", "%" + location + "%", "%" + category + "%"}
-
-	rows, err := e.db.Query(ctx, sql, args...)
-
-	if err != nil {
-		return nil, err
-	}
-
-	var events []model.EventList
-
-	for rows.Next() {
-		var event model.EventList
-
-		if err := rows.Scan(
-			&event.Event.Title,
-			&event.Event.ImgUrl,
-			&event.Category.Name,
-			&event.Event.StartAt,
-			&event.Location.Name,
-			&event.TotalAttendee,
-			&event.Event.Capacity,
-		); err != nil {
-			return nil, err
-		}
-
-		events = append(events, event)
-	}
-
-	if rows.Err() != nil {
-		return nil, rows.Err()
-	}
-
-	return events, nil
-}
-
-func (e *EventRepo) GetEventByPage(ctx context.Context, page int) ([]model.EventList, error) {
-	sql := `
-	SELECT events.title, events.img_url, STRING_AGG(categories.name, ', '), events.start_at, locations.name, COUNT(user_event.event_id), events.capacity 
-	FROM events 
-	LEFT JOIN locations ON locations.id = events.location_id 
-	LEFT JOIN communities ON communities.id = events.community_id 
-	LEFT JOIN event_category ON event_category.event_id = events.id 
-	LEFT JOIN categories ON categories.id = event_category.category_id 
-	LEFT JOIN user_event ON user_event.event_id = events.id 
-	GROUP BY events.id, categories.id, locations.id
-	LIMIT $1 OFFSET $2`
+	LIMIT $4 OFFSET $5`
 	limit := 6
 	offset := limit * (page - 1)
-	args := []any{limit, offset}
+	args := []any{"%" + search + "%", "%" + location + "%", "%" + category + "%", limit, offset}
 
 	rows, err := e.db.Query(ctx, sql, args...)
 

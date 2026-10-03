@@ -24,28 +24,16 @@ func NewEventService(er *repo.EventRepo, rdb *redis.Client) *EventService {
 	}
 }
 
-func (e *EventService) GetEvents(ctx context.Context, search, location, category string) ([]dto.EventList, error) {
-	result, err := e.er.GetEvents(ctx, search, location, category)
-
-	data := make([]dto.EventList, 0, len(result))
-
-	for _, v := range result {
-		data = append(data, dto.EventList{
-			Title:         v.Event.Title,
-			ImgUrl:        v.Event.ImgUrl,
-			Category:      v.Category.Name,
-			StartAt:       v.Event.StartAt,
-			Location:      v.Location.Name,
-			TotalAttendee: v.TotalAttendee,
-			Capacity:      v.Capacity,
-		})
+func (e *EventService) GetEvents(ctx context.Context, search, location, category string, page int) ([]dto.EventList, error) {
+	if page == 0 {
+		page += 1
 	}
 
-	return data, err
-}
+	if page < 0 {
+		return nil, custom_error.EventErrorPage
+	}
 
-func (e *EventService) GetEventByPage(ctx context.Context, page int) ([]dto.EventList, error) {
-	result, err := e.er.GetEventByPage(ctx, page)
+	result, err := e.er.GetEvents(ctx, search, location, category, page)
 
 	data := make([]dto.EventList, 0, len(result))
 
