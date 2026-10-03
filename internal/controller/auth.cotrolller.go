@@ -151,7 +151,7 @@ func (a *AuthController) Login(ctx *gin.Context) {
 // @Produce			json
 // @Router			/auth/logout	[post]
 // @Security		BearerToken
-// @Success			200		{object}	dto.Response
+// @Success			204		{object}	dto.Response
 // @Success			401		{object}	dto.ErrorResponse
 // @Failure			500		{object}	dto.ErrorResponse
 func (a *AuthController) Logout(ctx *gin.Context) {
