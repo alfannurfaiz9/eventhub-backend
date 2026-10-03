@@ -69,11 +69,6 @@ const docTemplate = `{
         },
         "/auth/forgot-password": {
             "post": {
-                "security": [
-                    {
-                        "BearerToken": []
-                    }
-                ],
                 "description": "Set new password",
                 "produces": [
                     "application/json"
