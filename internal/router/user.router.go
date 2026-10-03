@@ -1,6 +1,8 @@
 package router
 
 import (
+	"path"
+
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/controller"
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/middleware"
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/repo"
@@ -26,4 +28,5 @@ func initUserRouter(router *gin.Engine, db *pgxpool.Pool, rdb *redis.Client) {
 	r.GET("event", am.UserMiddleware, uc.GetMyEvent)
 	r.GET("notification", uc.GetNotification)
 	r.PATCH("change-profile", uc.ChangeUserProfile)
+	r.Static("img", path.Join("public", "img"))
 }

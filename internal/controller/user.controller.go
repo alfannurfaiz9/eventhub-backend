@@ -2,8 +2,11 @@ package controller
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
+	"path"
+	"time"
 
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/dto"
 	custom_error "github.com/alfannurfaiz9/eventhub-backend.git/internal/error"
@@ -117,9 +120,15 @@ func (u *UserController) GetNotification(ctx *gin.Context) {
 // @Summary			Change user profile
 // @Description		Change user profile
 // @Tags			user
+// @Accept			mpfd
 // @Router			/user/change-profile		[patch]
 // @Security		BearerToken
-// @Param			data	body	dto.UpdateProfile	true	"body to change profile"
+// @Param			full_name			formData	string	true	"full_name to change profile"
+// @Param			img_url				formData	file	true	"img_url to change profile"
+// @Param			address				formData	String	true	"address to change profile"
+// @Param			bio					formData	String	true	"bio to change profile"
+// @Param			current_password	formData	String	true	"current_password to change profile"
+// @Param			new_password		formData	String	true	"new_password to change profile"
 // @Success			200		{object}	dto.Response
 // @Failure			401		{object}	dto.ErrorResponse
 // @Failure			406		{object}	dto.ErrorResponse
@@ -127,7 +136,7 @@ func (u *UserController) GetNotification(ctx *gin.Context) {
 func (u *UserController) ChangeUserProfile(ctx *gin.Context) {
 	var body dto.UpdateProfile
 
-	if err := ctx.ShouldBindWith(&body, binding.JSON); err != nil {
+	if err := ctx.ShouldBindWith(&body, binding.FormMultipart); err != nil {
 		log.Println(err.Error())
 		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
@@ -136,6 +145,23 @@ func (u *UserController) ChangeUserProfile(ctx *gin.Context) {
 
 		return
 	}
+
+	log.Println(body.ImgUrl.Size)
+	log.Println(body.ImgUrl.Filename)
+
+	filename := fmt.Sprintf("%d_%s%s", time.Now().UnixNano(), body.FullName, path.Ext(body.ImgUrl.Filename))
+	filepath := path.Join("public", "img", filename)
+
+	if err := ctx.SaveUploadedFile(body.ImgUrl, filepath); err != nil {
+		log.Println(err.Error())
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
+			Success: false,
+			Message: "internal server error",
+		})
+	}
+
+	savedPath := fmt.Sprintf("img/%s", filename)
+	body.ImgUrl.Filename = savedPath
 
 	token, _ := ctx.Get("token")
 	claims, _ := token.(pkg.JWTClaims)

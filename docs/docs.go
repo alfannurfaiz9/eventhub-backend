@@ -901,8 +901,8 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "204": {
-                        "description": "No Content",
+                    "200": {
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/dto.Response"
                         }
@@ -1075,27 +1075,7 @@ const docTemplate = `{
             }
         },
         "dto.UpdateProfile": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "bio": {
-                    "type": "string"
-                },
-                "current_password": {
-                    "type": "string"
-                },
-                "full_name": {
-                    "type": "string"
-                },
-                "img_url": {
-                    "type": "string"
-                },
-                "new_password": {
-                    "type": "string"
-                }
-            }
+            "type": "object"
         }
     },
     "securityDefinitions": {

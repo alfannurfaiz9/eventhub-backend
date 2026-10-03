@@ -1,6 +1,9 @@
 package dto
 
-import "time"
+import (
+	"mime/multipart"
+	"time"
+)
 
 type User struct {
 	FullName string  `json:"full_name"`
@@ -23,12 +26,12 @@ type UserProfile struct {
 }
 
 type UpdateProfile struct {
-	FullName        string  `json:"full_name"`
-	ImgUrl          *string `json:"img_url"`
-	Address         *string `json:"address"`
-	Bio             *string `json:"bio"`
-	CurrentPassword string  `json:"current_password"`
-	NewPassword     string  `json:"new_password"`
+	FullName        string                `form:"full_name"`
+	ImgUrl          *multipart.FileHeader `form:"img_url"`
+	Address         *string               `form:"address"`
+	Bio             *string               `form:"bio"`
+	CurrentPassword string                `form:"current_password"`
+	NewPassword     string                `form:"new_password"`
 }
 
 type UserInformation struct {

@@ -1,0 +1,10 @@
+$kind: http-request
+name: /user/img
+description: ""
+url: http://localhost:9000/user/img/1791044715547723200_.png
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: ""
+order: 3002676236535697

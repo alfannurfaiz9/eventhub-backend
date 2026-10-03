@@ -50,19 +50,6 @@ definitions:
         type: boolean
     type: object
   dto.UpdateProfile:
-    properties:
-      address:
-        type: string
-      bio:
-        type: string
-      current_password:
-        type: string
-      full_name:
-        type: string
-      img_url:
-        type: string
-      new_password:
-        type: string
     type: object
 host: localhost:9000
 info:
@@ -642,8 +629,8 @@ paths:
         schema:
           $ref: '#/definitions/dto.UpdateProfile'
       responses:
-        "204":
-          description: No Content
+        "200":
+          description: OK
           schema:
             $ref: '#/definitions/dto.Response'
         "401":

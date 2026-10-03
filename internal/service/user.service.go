@@ -103,7 +103,7 @@ func (u *UserService) ChangeUserProfile(ctx context.Context, body dto.UpdateProf
 
 	if err := u.ur.ChangeUserProfile(ctx, model.User{
 		FullName: body.FullName,
-		ImgUrl:   body.ImgUrl,
+		ImgUrl:   &body.ImgUrl.Filename,
 		Address:  body.Address,
 		Bio:      body.Bio,
 		Password: fixNewPassword},
