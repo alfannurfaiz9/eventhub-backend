@@ -174,7 +174,7 @@ func (e *EventRepo) LeaveEvent(ctx context.Context, userId int, eventId int) err
 
 func (e *EventRepo) SaveEvent(ctx context.Context, userId, eventId int) error {
 	sql := `
-	INSERT INTO user_event
+	INSERT INTO user_saved_event
 	VALUES($1, $2)`
 	args := []any{userId, eventId}
 
