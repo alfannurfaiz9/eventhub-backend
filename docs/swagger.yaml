@@ -7,6 +7,37 @@ definitions:
       new_password:
         type: string
     type: object
+  dto.CreateEvent:
+    properties:
+      capacity:
+        type: integer
+      category_id:
+        type: integer
+      community_id:
+        type: integer
+      description:
+        type: string
+      end_at:
+        type: string
+      format:
+        type: string
+      img_url:
+        type: string
+      location_name:
+        type: string
+      speaker_company:
+        type: string
+      speaker_img_url:
+        type: string
+      speaker_name:
+        type: string
+      speaker_position:
+        type: string
+      start_at:
+        type: string
+      title:
+        type: string
+    type: object
   dto.ErrorResponse:
     properties:
       message:
@@ -110,7 +141,7 @@ paths:
       tags:
       - admin
   /auth/forgot-password:
-    post:
+    patch:
       description: Set new password
       parameters:
       - description: body to change password
@@ -569,6 +600,32 @@ paths:
       summary: Save event
       tags:
       - events
+  /events/create:
+    post:
+      description: Create new event
+      parameters:
+      - description: body to create event
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateEvent'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerToken: []
+      summary: Create new event
+      tags:
+      - events
   /events/detail/{id}:
     get:
       description: Get event detail
@@ -660,7 +717,7 @@ paths:
       tags:
       - organizer
   /user/change-password:
-    post:
+    patch:
       consumes:
       - application/json
       description: Change user password

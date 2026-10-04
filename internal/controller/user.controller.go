@@ -242,7 +242,7 @@ func (u *UserController) ChangeUserProfile(ctx *gin.Context) {
 // @Tags			user
 // @Accept			json
 // @Security		BearerToken
-// @Router			/user/change-password	[post]
+// @Router			/user/change-password	[patch]
 // @Param			data	body		dto.ChangePassword	true	"body to change password"
 // @Success			200		{object}	dto.Response
 // @Failure			401		{object}	dto.ErrorResponse

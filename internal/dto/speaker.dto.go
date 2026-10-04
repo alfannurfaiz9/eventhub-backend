@@ -1,8 +1,8 @@
 package dto
 
 type Speaker struct {
-	Id       int    `json:"id"`
 	Name     string `json:"name"`
+	Imgurl   string `json:"img_url"`
 	Position string `json:"position"`
 	Company  string `json:"company"`
 }

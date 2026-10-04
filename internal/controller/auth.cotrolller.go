@@ -177,7 +177,7 @@ func (a *AuthController) Logout(ctx *gin.Context) {
 // @Description		Set new password
 // @Tags			auth
 // @Produce			json
-// @Router			/auth/forgot-password	[post]
+// @Router			/auth/forgot-password	[patch]
 // @Param			data	body	dto.ForgotPassword	true	"body to change password"
 // @Success			200		{object}	dto.Response
 // @Failure			401		{object}	dto.ErrorResponse

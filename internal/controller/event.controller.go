@@ -11,6 +11,7 @@ import (
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/service"
 	"github.com/alfannurfaiz9/eventhub-backend.git/pkg"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type EventController struct {
@@ -265,5 +266,48 @@ func (e *EventController) SaveEvent(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, dto.Response{
 		Success: true,
 		Message: "successfully save event",
+	})
+}
+
+// CreateEvent
+//
+// @Summary			Create new event
+// @Description		Create new event
+// @Tags			events
+// @Produce			json
+// @Security		BearerToken
+// @Router			/events/create	[post]
+// @Param			data	body	dto.CreateEvent	true	"body to create event"
+// @Success			201		{object}	dto.Response
+// @Failure			500		{object}	dto.ErrorResponse
+func (e *EventController) CreateEvent(ctx *gin.Context) {
+	var body dto.CreateEvent
+
+	if err := ctx.ShouldBindWith(&body, binding.JSON); err != nil {
+		log.Println(err.Error())
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
+			Success: false,
+			Message: err.Error(),
+		})
+
+		return
+	}
+
+	token, _ := ctx.Get("token")
+	claims, _ := token.(pkg.JWTClaims)
+
+	if err := e.es.CreateEvent(ctx.Request.Context(), body, claims.Id); err != nil {
+		log.Println(err.Error())
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
+			Success: false,
+			Message: err.Error(),
+		})
+
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, dto.Response{
+		Success: true,
+		Message: "event successfully created",
 	})
 }

@@ -90,7 +90,7 @@ const docTemplate = `{
             }
         },
         "/auth/forgot-password": {
-            "post": {
+            "patch": {
                 "description": "Set new password",
                 "produces": [
                     "application/json"
@@ -636,6 +636,48 @@ const docTemplate = `{
                 }
             }
         },
+        "/events/create": {
+            "post": {
+                "security": [
+                    {
+                        "BearerToken": []
+                    }
+                ],
+                "description": "Create new event",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "events"
+                ],
+                "summary": "Create new event",
+                "parameters": [
+                    {
+                        "description": "body to create event",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateEvent"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/events/detail/{id}": {
             "get": {
                 "description": "Get event detail",
@@ -940,7 +982,7 @@ const docTemplate = `{
             }
         },
         "/user/change-password": {
-            "post": {
+            "patch": {
                 "security": [
                     {
                         "BearerToken": []
@@ -1185,6 +1227,53 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "new_password": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CreateEvent": {
+            "type": "object",
+            "properties": {
+                "capacity": {
+                    "type": "integer"
+                },
+                "category_id": {
+                    "type": "integer"
+                },
+                "community_id": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "end_at": {
+                    "type": "string"
+                },
+                "format": {
+                    "type": "string"
+                },
+                "img_url": {
+                    "type": "string"
+                },
+                "location_name": {
+                    "type": "string"
+                },
+                "speaker_company": {
+                    "type": "string"
+                },
+                "speaker_img_url": {
+                    "type": "string"
+                },
+                "speaker_name": {
+                    "type": "string"
+                },
+                "speaker_position": {
+                    "type": "string"
+                },
+                "start_at": {
+                    "type": "string"
+                },
+                "title": {
                     "type": "string"
                 }
             }

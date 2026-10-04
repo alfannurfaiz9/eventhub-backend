@@ -28,6 +28,6 @@ func initUserRouter(router *gin.Engine, db *pgxpool.Pool, rdb *redis.Client) {
 	r.GET("event", am.UserMiddleware, uc.GetMyEvent)
 	r.GET("notification", uc.GetNotification)
 	r.PATCH("edit", uc.ChangeUserProfile)
-	r.POST("change-password", uc.ChangeUserPassword)
+	r.PATCH("change-password", uc.ChangeUserPassword)
 	r.Static("img", path.Join("public", "img"))
 }
