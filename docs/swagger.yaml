@@ -643,13 +643,6 @@ paths:
         required: true
         type: array
       - collectionFormat: multi
-        description: speaker_img_url
-        in: formData
-        items:
-          type: string
-        name: speaker_img_url
-        type: array
-      - collectionFormat: multi
         description: speaker_position
         in: formData
         items:

@@ -29,10 +29,11 @@ type CreateEvent struct {
 	CommunityId     *int                 `form:"community_id"`
 	CategoryId      []int                `form:"category_id"`
 	LocationName    string               `form:"location_name"`
-	SpeakerName     string               `form:"speaker_name"`
-	SpeakerImgUrl   string               `form:"speaker_img_url"`
-	SpeakerPosition string               `form:"speaker_position"`
-	SpeakerCompany  string               `form:"speaker_company"`
+	SpeakerName     []string             `form:"speaker_name"`
+	SpeakerImg      multipart.FileHeader `form:"speaker_img"`
+	SpeakerImgUrl   []string             `form:"speaker_img_url"`
+	SpeakerPosition []string             `form:"speaker_position"`
+	SpeakerCompany  []string             `form:"speaker_company"`
 }
 
 type EventCategory struct {

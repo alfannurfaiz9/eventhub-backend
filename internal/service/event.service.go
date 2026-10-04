@@ -131,14 +131,18 @@ func (e *EventService) CreateEvent(ctx context.Context, body dto.CreateEvent, or
 		}
 	}()
 
-	speakerId, err := e.er.InsertSpeakers(ctx, model.Speaker{
-		Name:     body.SpeakerName,
-		ImgUrl:   body.SpeakerImgUrl,
-		Position: body.SpeakerPosition,
-		Company:  body.SpeakerCompany,
-	}, tx)
-	if err != nil {
-		return err
+	speakersId := make([]int, 0, len(body.SpeakerName))
+	for i := range body.SpeakerName {
+		speakerId, err := e.er.InsertSpeakers(ctx, model.Speaker{
+			Name:     body.SpeakerName[i],
+			Position: body.SpeakerPosition[i],
+			Company:  body.SpeakerCompany[i],
+		}, tx)
+		if err != nil {
+			return err
+		}
+
+		speakersId = append(speakersId, speakerId)
 	}
 
 	locationId, err := e.er.InsertLocation(ctx, model.Location{Name: body.LocationName}, tx)
@@ -182,10 +186,14 @@ func (e *EventService) CreateEvent(ctx context.Context, body dto.CreateEvent, or
 		return custom_error.NoRowsAffected
 	}
 
-	cmdEs, err := e.er.InsertEventSpeaker(ctx, model.EventSpeaker{
-		EventId:   eventId,
-		SpeakerId: speakerId,
-	}, tx)
+	speakers := make([]model.EventSpeaker, 0, len(speakersId))
+	for _, v := range speakersId {
+		speakers = append(speakers, model.EventSpeaker{
+			EventId:   eventId,
+			SpeakerId: v,
+		})
+	}
+	cmdEs, err := e.er.InsertEventSpeaker(ctx, speakers, tx)
 
 	if err != nil {
 		return err

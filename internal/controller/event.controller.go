@@ -293,7 +293,6 @@ func (e *EventController) SaveEvent(ctx *gin.Context) {
 // @Param			category_id			formData	[]int		true	"category_id"		collectionFormat(multi)
 // @Param			location_name		formData	string		true	"location_name"
 // @Param			speaker_name		formData	[]string	true	"speaker_name" 		collectionFormat(multi)
-// @Param			speaker_img_url		formData	[]string	false	"speaker_img_url" 	collectionFormat(multi)
 // @Param			speaker_position	formData	[]string	true	"speaker_position"	collectionFormat(multi)
 // @Param			speaker_company		formData	[]string	true	"speaker_company" 	collectionFormat(multi)
 // @Success			201		{object}	dto.Response

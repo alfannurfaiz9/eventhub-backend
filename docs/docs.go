@@ -754,16 +754,6 @@ const docTemplate = `{
                             "type": "string"
                         },
                         "collectionFormat": "multi",
-                        "description": "speaker_img_url",
-                        "name": "speaker_img_url",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "collectionFormat": "multi",
                         "description": "speaker_position",
                         "name": "speaker_position",
                         "in": "formData",

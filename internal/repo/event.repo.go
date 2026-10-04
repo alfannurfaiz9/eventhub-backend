@@ -258,12 +258,20 @@ func (e *EventRepo) InsertEventCategory(ctx context.Context, body []model.EventC
 	return db.Exec(ctx, sql, args...)
 }
 
-func (e *EventRepo) InsertEventSpeaker(ctx context.Context, body model.EventSpeaker, db DBTX) (pgconn.CommandTag, error) {
+func (e *EventRepo) InsertEventSpeaker(ctx context.Context, body []model.EventSpeaker, db DBTX) (pgconn.CommandTag, error) {
 	sql := `
 	INSERT INTO event_speakers(event_id, speaker_id)
-	VALUES($1, $2)
+	VALUES
 	`
-	args := []any{body.EventId, body.SpeakerId}
+	args := []any{}
+	for i, v := range body {
+		n := (i * 2) + 1
+		sql += fmt.Sprintf("($%d, $%d)", n, n+1)
+		args = append(args, v.EventId, v.SpeakerId)
+		if i < len(body)-1 {
+			sql += ","
+		}
+	}
 
 	return db.Exec(ctx, sql, args...)
 }
