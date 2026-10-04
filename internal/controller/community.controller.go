@@ -229,6 +229,7 @@ func (c *CommunityController) GetPopularCommunity(ctx *gin.Context) {
 // @Security		BearerToken
 // @Success			200		{object}	dto.Response
 // @Failure			401		{object}	dto.ErrorResponse
+// @Failure			406		{object}	dto.ErrorResponse
 // @Failure			500		{object}	dto.ErrorResponse
 func (c *CommunityController) JoinCommunity(ctx *gin.Context) {
 	token, _ := ctx.Get("token")
@@ -274,6 +275,7 @@ func (c *CommunityController) JoinCommunity(ctx *gin.Context) {
 // @Security		BearerToken
 // @Success			200		{object}	dto.Response
 // @Failure			401		{object}	dto.ErrorResponse
+// @Failure			406		{object}	dto.ErrorResponse
 // @Failure			500		{object}	dto.ErrorResponse
 func (c *CommunityController) LeaveCommunity(ctx *gin.Context) {
 	token, _ := ctx.Get("token")

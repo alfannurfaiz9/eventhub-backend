@@ -25,8 +25,10 @@ func NewAdminController(as *service.AdminService) *AdminController {
 // @Description		Get admin dashboard
 // @Tags			admin
 // @Produce			json
+// @Security		BearerToken
 // @Router			/admin/dashboard	[get]
 // @Success			200		{object}	dto.Response
+// @Failure			404		{object}	dto.ErrorResponse
 // @Failure			500		{object}	dto.ErrorResponse
 func (a *AdminController) GetAdminDashboard(ctx *gin.Context) {
 	result, err := a.as.GetAdminDashboard(ctx.Request.Context())
@@ -55,8 +57,10 @@ func (a *AdminController) GetAdminDashboard(ctx *gin.Context) {
 // @Description		Get admin dashboard all users
 // @Tags			admin
 // @Produce			json
+// @Security		BearerToken
 // @Router			/admin/dashboard/users	[get]
 // @Success			200		{object}	dto.Response
+// @Failure			404		{object}	dto.ErrorResponse
 // @Failure			500		{object}	dto.ErrorResponse
 func (a *AdminController) GetAllUser(ctx *gin.Context) {
 	result, err := a.as.GetAllUser(ctx.Request.Context())

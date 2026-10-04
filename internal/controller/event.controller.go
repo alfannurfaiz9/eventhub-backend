@@ -126,6 +126,7 @@ func (e *EventController) GetEventDetail(ctx *gin.Context) {
 // @Success			200		{object}	dto.Response
 // @Failure			401		{object}	dto.ErrorResponse
 // @Failure			404		{object}	dto.ErrorResponse
+// @Failure			406		{object}	dto.ErrorResponse
 // @Failure			500		{object}	dto.ErrorResponse
 func (e *EventController) JoinEvent(ctx *gin.Context) {
 	token, _ := ctx.Get("token")
@@ -200,6 +201,7 @@ func (e *EventController) GetUpcomingEvent(ctx *gin.Context) {
 // @Security		BearerToken
 // @Success			200		{object}	dto.Response
 // @Failure			401		{object}	dto.ErrorResponse
+// @Failure			406		{object}	dto.ErrorResponse
 // @Failure			500		{object}	dto.ErrorResponse
 func (e *EventController) LeaveEvent(ctx *gin.Context) {
 	token, _ := ctx.Get("token")

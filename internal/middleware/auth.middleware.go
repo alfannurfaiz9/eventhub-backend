@@ -113,7 +113,7 @@ func (a *AuthMiddleWare) UserMiddleware(ctx *gin.Context) {
 	}
 
 	if t.Role != "attendee" {
-		ctx.AbortWithStatusJSON(http.StatusNotFound, dto.ErrorResponse{
+		ctx.AbortWithStatusJSON(http.StatusNotAcceptable, dto.ErrorResponse{
 			Success: false,
 			Message: "no previlage",
 		})
