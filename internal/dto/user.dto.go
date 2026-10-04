@@ -26,12 +26,15 @@ type UserProfile struct {
 }
 
 type UpdateProfile struct {
-	FullName        string                `form:"full_name"`
-	Img             *multipart.FileHeader `form:"img_url"`
-	Address         *string               `form:"address"`
-	Bio             *string               `form:"bio"`
-	CurrentPassword string                `form:"current_password"`
-	NewPassword     string                `form:"new_password"`
+	FullName string                `form:"full_name"`
+	Img      *multipart.FileHeader `form:"img_url"`
+	Address  *string               `form:"address"`
+	Bio      *string               `form:"bio"`
+}
+
+type ChangePassword struct {
+	CurrentPassword string `json:"current_password"`
+	NewPassword     string `json:"new_password"`
 }
 
 type UserInformation struct {

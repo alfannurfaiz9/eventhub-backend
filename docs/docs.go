@@ -877,7 +877,61 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/change-profile": {
+        "/user/change-password": {
+            "post": {
+                "security": [
+                    {
+                        "BearerToken": []
+                    }
+                ],
+                "description": "Change user password",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Change user password",
+                "parameters": [
+                    {
+                        "description": "body to change password",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ChangePassword"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "406": {
+                        "description": "Not Acceptable",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/edit": {
             "patch": {
                 "security": [
                     {
@@ -918,18 +972,6 @@ const docTemplate = `{
                         "type": "string",
                         "description": "bio",
                         "name": "bio",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "current password",
-                        "name": "current_password",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "new password",
-                        "name": "new_password",
                         "in": "formData"
                     }
                 ],
@@ -1037,6 +1079,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.ChangePassword": {
+            "type": "object",
+            "properties": {
+                "current_password": {
+                    "type": "string"
+                },
+                "new_password": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.ErrorResponse": {
             "type": "object",
             "properties": {

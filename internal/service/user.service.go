@@ -78,8 +78,8 @@ func (u *UserService) GetNotification(ctx context.Context, id int) ([]dto.Notifi
 	return data, nil
 }
 
-func (u *UserService) ChangeUserProfile(ctx context.Context, body dto.UpdateProfile, id int, imgUrl *string) error {
-	if len(body.NewPassword) < 6 && len(body.NewPassword) != 0 {
+func (u *UserService) ChangeUserPassword(ctx context.Context, body dto.ChangePassword, id int) error {
+	if len(body.NewPassword) < 6 {
 		return custom_error.ChangeUserrInvalidLength
 	}
 
@@ -96,17 +96,19 @@ func (u *UserService) ChangeUserProfile(ctx context.Context, body dto.UpdateProf
 	hash := pkg.NewRecommendHashConfig()
 	hashedPass := hash.GenerateHash(body.NewPassword)
 
-	fixNewPassword := hashedPass
-	if len(body.NewPassword) == 0 {
-		fixNewPassword = currentProfile.Password
+	return u.ur.ChangeUserPassword(ctx, model.User{Password: hashedPass}, id)
+}
+
+func (u *UserService) ChangeUserProfile(ctx context.Context, body dto.UpdateProfile, id int, imgUrl *string) error {
+	if body.FullName == "" && body.Img == nil && body.Address == nil && body.Bio == nil {
+		return custom_error.AllFieldIsEmpty
 	}
 
 	if err := u.ur.ChangeUserProfile(ctx, model.User{
 		FullName: body.FullName,
 		ImgUrl:   imgUrl,
 		Address:  body.Address,
-		Bio:      body.Bio,
-		Password: fixNewPassword},
+		Bio:      body.Bio},
 		id); err != nil {
 		return err
 	}

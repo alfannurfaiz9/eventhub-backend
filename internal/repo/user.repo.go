@@ -115,12 +115,32 @@ func (u *UserRepo) FindUser(ctx context.Context, id int) (model.User, error) {
 	return data, nil
 }
 
+func (u *UserRepo) ChangeUserPassword(ctx context.Context, body model.User, id int) error {
+	sql := `
+	UPDATE users
+	SET password = $1
+	WHERE id = $2`
+	args := []any{body.Password, id}
+
+	cmd, err := u.db.Exec(ctx, sql, args...)
+
+	if err != nil {
+		return err
+	}
+
+	if cmd.RowsAffected() == 0 {
+		return custom_error.NoRowsAffected
+	}
+
+	return nil
+}
+
 func (u *UserRepo) ChangeUserProfile(ctx context.Context, body model.User, id int) error {
 	sql := `
 	UPDATE users
-	SET full_name = COALESCE(NULLIF($1, ''), full_name), img_url = COALESCE(NULLIF($2, ''), img_url), address = COALESCE(NULLIF($3, ''), address), bio = COALESCE(NULLIF($4, ''), bio), password = COALESCE(NULLIF($5, ''), password)
-	WHERE id = $6`
-	args := []any{body.FullName, body.ImgUrl, body.Address, body.Bio, body.Password, id}
+	SET full_name = COALESCE(NULLIF($1, ''), full_name), img_url = COALESCE(NULLIF($2, ''), img_url), address = COALESCE(NULLIF($3, ''), address), bio = COALESCE(NULLIF($4, ''), bio)
+	WHERE id = $5`
+	args := []any{body.FullName, body.ImgUrl, body.Address, body.Bio, id}
 
 	cmd, err := u.db.Exec(ctx, sql, args...)
 

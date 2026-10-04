@@ -123,13 +123,11 @@ func (u *UserController) GetNotification(ctx *gin.Context) {
 // @Accept			mpfd
 // @Produce			json
 // @Security		BearerToken
-// @Router			/user/change-profile	[patch]
+// @Router			/user/edit			[patch]
 // @Param			full_name			formData	string	false	"full name"
 // @Param			img_url				formData	file	false	"img url"
 // @Param			address				formData	string	false	"address"
 // @Param			bio					formData	string	false	"bio"
-// @Param			current_password	formData	string	false	"current password"
-// @Param			new_password		formData	string	false	"new password"
 // @Success			200		{object}	dto.Response
 // @Failure			401		{object}	dto.ErrorResponse
 // @Failure			406		{object}	dto.ErrorResponse
@@ -185,6 +183,24 @@ func (u *UserController) ChangeUserProfile(ctx *gin.Context) {
 			return
 		}
 
+		if errors.Is(err, custom_error.AllFieldIsEmpty) {
+			ctx.JSON(http.StatusNotAcceptable, dto.ErrorResponse{
+				Success: false,
+				Message: err.Error(),
+			})
+
+			return
+		}
+
+		if errors.Is(err, custom_error.AllFieldIsEmpty) {
+			ctx.JSON(http.StatusNotAcceptable, dto.ErrorResponse{
+				Success: false,
+				Message: err.Error(),
+			})
+
+			return
+		}
+
 		if errors.Is(err, custom_error.ChangeUserrInvalidLength) {
 			ctx.JSON(http.StatusNotAcceptable, dto.ErrorResponse{
 				Success: false,
@@ -214,6 +230,67 @@ func (u *UserController) ChangeUserProfile(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, dto.Response{
 		Success: true,
 		Message: "profile updated successfully",
+	})
+}
+
+// ChangeUserPassword
+//
+// @Summary			Change user password
+// @Description		Change user password
+// @Tags			user
+// @Accept			json
+// @Security		BearerToken
+// @Router			/user/change-password	[post]
+// @Param			data	body		dto.ChangePassword	true	"body to change password"
+// @Success			200		{object}	dto.Response
+// @Failure			401		{object}	dto.ErrorResponse
+// @Failure			406		{object}	dto.ErrorResponse
+// @Failure			500		{object}	dto.ErrorResponse
+func (u *UserController) ChangeUserPassword(ctx *gin.Context) {
+	var body dto.ChangePassword
+
+	if err := ctx.ShouldBindWith(&body, binding.JSON); err != nil {
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
+			Success: false,
+			Message: "internal server error",
+		})
+
+		return
+	}
+
+	token, _ := ctx.Get("token")
+	claims, _ := token.(pkg.JWTClaims)
+
+	if err := u.us.ChangeUserPassword(ctx.Request.Context(), body, claims.Id); err != nil {
+		if errors.Is(err, custom_error.ChangeUserrInvalidLength) {
+			ctx.JSON(http.StatusNotAcceptable, dto.ErrorResponse{
+				Success: false,
+				Message: err.Error(),
+			})
+
+			return
+		}
+
+		if errors.Is(err, custom_error.ChangeUserInvalidPassword) {
+			ctx.JSON(http.StatusUnauthorized, dto.ErrorResponse{
+				Success: false,
+				Message: err.Error(),
+			})
+
+			return
+		}
+
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
+			Success: false,
+			Message: "internal server error",
+		})
+
+		return
+	}
+
+	ctx.JSON(http.StatusOK, dto.Response{
+		Success: true,
+		Message: "password successfully changed",
 	})
 }
 

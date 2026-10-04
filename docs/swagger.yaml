@@ -1,5 +1,12 @@
 basePath: /
 definitions:
+  dto.ChangePassword:
+    properties:
+      current_password:
+        type: string
+      new_password:
+        type: string
+    type: object
   dto.ErrorResponse:
     properties:
       message:
@@ -616,7 +623,41 @@ paths:
       summary: Get organizer dashboard all users
       tags:
       - organizer
-  /user/change-profile:
+  /user/change-password:
+    post:
+      consumes:
+      - application/json
+      description: Change user password
+      parameters:
+      - description: body to change password
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ChangePassword'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "406":
+          description: Not Acceptable
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerToken: []
+      summary: Change user password
+      tags:
+      - user
+  /user/edit:
     patch:
       consumes:
       - multipart/form-data
@@ -637,14 +678,6 @@ paths:
       - description: bio
         in: formData
         name: bio
-        type: string
-      - description: current password
-        in: formData
-        name: current_password
-        type: string
-      - description: new password
-        in: formData
-        name: new_password
         type: string
       produces:
       - application/json
