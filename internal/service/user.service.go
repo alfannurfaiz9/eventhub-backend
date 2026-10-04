@@ -78,7 +78,7 @@ func (u *UserService) GetNotification(ctx context.Context, id int) ([]dto.Notifi
 	return data, nil
 }
 
-func (u *UserService) ChangeUserProfile(ctx context.Context, body dto.UpdateProfile, id int) error {
+func (u *UserService) ChangeUserProfile(ctx context.Context, body dto.UpdateProfile, id int, imgUrl *string) error {
 	if len(body.NewPassword) < 6 && len(body.NewPassword) != 0 {
 		return custom_error.ChangeUserrInvalidLength
 	}
@@ -103,7 +103,7 @@ func (u *UserService) ChangeUserProfile(ctx context.Context, body dto.UpdateProf
 
 	if err := u.ur.ChangeUserProfile(ctx, model.User{
 		FullName: body.FullName,
-		ImgUrl:   &body.ImgUrl.Filename,
+		ImgUrl:   imgUrl,
 		Address:  body.Address,
 		Bio:      body.Bio,
 		Password: fixNewPassword},

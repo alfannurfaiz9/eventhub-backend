@@ -121,14 +121,15 @@ func (u *UserController) GetNotification(ctx *gin.Context) {
 // @Description		Change user profile
 // @Tags			user
 // @Accept			mpfd
-// @Router			/user/change-profile		[patch]
+// @Produce			json
 // @Security		BearerToken
-// @Param			full_name			formData	string	true	"full_name to change profile"
-// @Param			img_url				formData	file	true	"img_url to change profile"
-// @Param			address				formData	String	true	"address to change profile"
-// @Param			bio					formData	String	true	"bio to change profile"
-// @Param			current_password	formData	String	true	"current_password to change profile"
-// @Param			new_password		formData	String	true	"new_password to change profile"
+// @Router			/user/change-profile	[patch]
+// @Param			full_name			formData	string	false	"full name"
+// @Param			img_url				formData	file	false	"img url"
+// @Param			address				formData	string	false	"address"
+// @Param			bio					formData	string	false	"bio"
+// @Param			current_password	formData	string	false	"current password"
+// @Param			new_password		formData	string	false	"new password"
 // @Success			200		{object}	dto.Response
 // @Failure			401		{object}	dto.ErrorResponse
 // @Failure			406		{object}	dto.ErrorResponse
@@ -146,27 +147,34 @@ func (u *UserController) ChangeUserProfile(ctx *gin.Context) {
 		return
 	}
 
-	log.Println(body.ImgUrl.Size)
-	log.Println(body.ImgUrl.Filename)
+	var imgUrl string
 
-	filename := fmt.Sprintf("%d_%s%s", time.Now().UnixNano(), body.FullName, path.Ext(body.ImgUrl.Filename))
-	filepath := path.Join("public", "img", filename)
+	if body.Img != nil {
+		filename := fmt.Sprintf("%d_%s%s", time.Now().UnixNano(), body.FullName, path.Ext(body.Img.Filename))
+		filepath := path.Join("public", "img", filename)
 
-	if err := ctx.SaveUploadedFile(body.ImgUrl, filepath); err != nil {
-		log.Println(err.Error())
-		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
-			Success: false,
-			Message: "internal server error",
-		})
+		if err := ctx.SaveUploadedFile(body.Img, filepath); err != nil {
+			log.Println(err.Error())
+			ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
+				Success: false,
+				Message: "internal server error",
+			})
+
+			return
+		}
+
+		savedPath := fmt.Sprintf("img/%s", filename)
+		imgUrl = savedPath
 	}
-
-	savedPath := fmt.Sprintf("img/%s", filename)
-	body.ImgUrl.Filename = savedPath
 
 	token, _ := ctx.Get("token")
 	claims, _ := token.(pkg.JWTClaims)
 
-	if err := u.us.ChangeUserProfile(ctx.Request.Context(), body, claims.Id); err != nil {
+	if body.Img == nil {
+		imgUrl = ""
+	}
+
+	if err := u.us.ChangeUserProfile(ctx.Request.Context(), body, claims.Id, &imgUrl); err != nil {
 		log.Println(err.Error())
 		if errors.Is(err, custom_error.NoRowsAffected) {
 			ctx.JSON(http.StatusUnauthorized, dto.ErrorResponse{

@@ -49,8 +49,6 @@ definitions:
         example: true
         type: boolean
     type: object
-  dto.UpdateProfile:
-    type: object
 host: localhost:9000
 info:
   contact: {}
@@ -620,14 +618,36 @@ paths:
       - organizer
   /user/change-profile:
     patch:
+      consumes:
+      - multipart/form-data
       description: Change user profile
       parameters:
-      - description: body to change profile
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/dto.UpdateProfile'
+      - description: full name
+        in: formData
+        name: full_name
+        type: string
+      - description: img url
+        in: formData
+        name: img_url
+        type: file
+      - description: address
+        in: formData
+        name: address
+        type: string
+      - description: bio
+        in: formData
+        name: bio
+        type: string
+      - description: current password
+        in: formData
+        name: current_password
+        type: string
+      - description: new password
+        in: formData
+        name: new_password
+        type: string
+      produces:
+      - application/json
       responses:
         "200":
           description: OK

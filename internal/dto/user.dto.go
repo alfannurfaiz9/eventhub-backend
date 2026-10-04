@@ -27,7 +27,7 @@ type UserProfile struct {
 
 type UpdateProfile struct {
 	FullName        string                `form:"full_name"`
-	ImgUrl          *multipart.FileHeader `form:"img_url"`
+	Img             *multipart.FileHeader `form:"img_url"`
 	Address         *string               `form:"address"`
 	Bio             *string               `form:"bio"`
 	CurrentPassword string                `form:"current_password"`

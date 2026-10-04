@@ -879,19 +879,52 @@
                     }
                 ],
                 "description": "Change user profile",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
                 "tags": [
                     "user"
                 ],
                 "summary": "Change user profile",
                 "parameters": [
                     {
-                        "description": "body to change profile",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.UpdateProfile"
-                        }
+                        "type": "string",
+                        "description": "full name",
+                        "name": "full_name",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "img url",
+                        "name": "img_url",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "address",
+                        "name": "address",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "bio",
+                        "name": "bio",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "current password",
+                        "name": "current_password",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "new password",
+                        "name": "new_password",
+                        "in": "formData"
                     }
                 ],
                 "responses": {
@@ -1067,9 +1100,6 @@
                     "example": true
                 }
             }
-        },
-        "dto.UpdateProfile": {
-            "type": "object"
         }
     },
     "securityDefinitions": {
