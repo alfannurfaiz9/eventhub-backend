@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/config"
+	"github.com/alfannurfaiz9/eventhub-backend.git/internal/middleware"
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/router"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -15,10 +16,8 @@ import (
 // @title           			Eventhub Backend
 // @version         			1.0
 // @description     			API docs for eventhub
-
 // @host      					localhost:9000
 // @BasePath  					/
-
 // @securityDefinitions.apikey	BearerToken
 // @in							header
 // @name						Authorization
@@ -45,6 +44,7 @@ func main() {
 	defer rdb.Close()
 
 	r := gin.Default()
+	r.Use(middleware.Cors)
 	router.InitMainRouter(r, pool, rdb)
 
 	r.Run(fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT")))

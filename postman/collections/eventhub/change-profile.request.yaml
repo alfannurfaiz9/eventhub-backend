@@ -1,8 +1,0 @@
-$kind: http-request
-description: ""
-url: http://localhost:9000/user/change-profile
-method: PATCH
-body:
-  type: json
-  content: ""
-order: 1791039316937

@@ -2,8 +2,8 @@ package dto
 
 type Register struct {
 	FullName string `json:"full_name" example:"your name"`
-	Email    string `json:"email" example:"youremail@gmail.com"`
-	Password string `json:"password" example:"yourpassword"`
+	Email    string `json:"email" example:"youremail@gmail.com" binding:"required,email"`
+	Password string `json:"password" example:"yourpassword" binding:"required,min=6"`
 }
 
 type Login struct {
