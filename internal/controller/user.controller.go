@@ -83,6 +83,17 @@ func (u *UserController) GetMyEvent(ctx *gin.Context) {
 	})
 }
 
+// GetNotification
+//
+// @Summary			Get user notification
+// @Description		Get user notification
+// @Tags			user
+// @Produce			json
+// @Security		BearerToken
+// @Router			/user/notification			[get]
+// @Success			200		{object}	dto.Response
+// @Failure			401		{object}	dto.ErrorResponse
+// @Failure			500		{object}	dto.ErrorResponse
 func (u *UserController) GetNotification(ctx *gin.Context) {
 	token, _ := ctx.Get("token")
 	claims, _ := token.(pkg.JWTClaims)
@@ -91,15 +102,6 @@ func (u *UserController) GetNotification(ctx *gin.Context) {
 
 	if err != nil {
 		log.Println(err.Error())
-		if errors.Is(err, custom_error.NotificationNotFound) {
-			ctx.JSON(http.StatusForbidden, dto.ErrorResponse{
-				Success: false,
-				Message: err.Error(),
-			})
-
-			return
-		}
-
 		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
 			Message: "internal server error",

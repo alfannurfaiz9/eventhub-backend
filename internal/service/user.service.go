@@ -61,10 +61,6 @@ func (u *UserService) GetNotification(ctx context.Context, id int) ([]dto.Notifi
 		return nil, err
 	}
 
-	if len(result) == 0 {
-		return nil, custom_error.NotificationNotFound
-	}
-
 	data := make([]dto.Notification, 0, len(result))
 
 	for _, v := range result {
