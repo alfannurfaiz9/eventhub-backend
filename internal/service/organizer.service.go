@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/dto"
-	custom_error "github.com/alfannurfaiz9/eventhub-backend.git/internal/error"
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/repo"
 )
 
@@ -33,14 +32,6 @@ func (o *OrganizerService) GetOrganizerDashboard(ctx context.Context, id int) (d
 func (o *OrganizerService) GetOrganizerEvent(ctx context.Context, id int) ([]dto.EventList, error) {
 	result, err := o.or.GetOrganizerEvent(ctx, id)
 
-	if err != nil {
-		return nil, err
-	}
-
-	if len(result) == 0 {
-		return nil, custom_error.EventNotFound
-	}
-
 	events := make([]dto.EventList, 0, len(result))
 	for _, v := range result {
 		events = append(events, dto.EventList{
@@ -52,5 +43,5 @@ func (o *OrganizerService) GetOrganizerEvent(ctx context.Context, id int) ([]dto
 		})
 	}
 
-	return events, nil
+	return events, err
 }

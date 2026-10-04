@@ -821,6 +821,11 @@ const docTemplate = `{
         },
         "/organizer/dashboard": {
             "get": {
+                "security": [
+                    {
+                        "BearerToken": []
+                    }
+                ],
                 "description": "Get organizer dashboard",
                 "produces": [
                     "application/json"
@@ -836,6 +841,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/dto.Response"
                         }
                     },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -847,6 +858,11 @@ const docTemplate = `{
         },
         "/organizer/dashboard/events": {
             "get": {
+                "security": [
+                    {
+                        "BearerToken": []
+                    }
+                ],
                 "description": "Get organizer dashboard all users",
                 "produces": [
                     "application/json"
@@ -862,8 +878,8 @@ const docTemplate = `{
                             "$ref": "#/definitions/dto.Response"
                         }
                     },
-                    "403": {
-                        "description": "Forbidden",
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/dto.ErrorResponse"
                         }

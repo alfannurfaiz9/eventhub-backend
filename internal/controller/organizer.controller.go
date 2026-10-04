@@ -1,12 +1,10 @@
 package controller
 
 import (
-	"errors"
 	"log"
 	"net/http"
 
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/dto"
-	custom_error "github.com/alfannurfaiz9/eventhub-backend.git/internal/error"
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/service"
 	"github.com/alfannurfaiz9/eventhub-backend.git/pkg"
 	"github.com/gin-gonic/gin"
@@ -28,8 +26,10 @@ func NewOrganizerController(os *service.OrganizerService) *OrganizerController {
 // @Description		Get organizer dashboard
 // @Tags			organizer
 // @Produce			json
+// @Security		BearerToken
 // @Router			/organizer/dashboard	[get]
 // @Success			200		{object}	dto.Response
+// @Failure			404		{object}	dto.ErrorResponse
 // @Failure			500		{object}	dto.ErrorResponse
 func (o *OrganizerController) GetOrganizerDashboard(ctx *gin.Context) {
 	token, _ := ctx.Get("token")
@@ -60,9 +60,10 @@ func (o *OrganizerController) GetOrganizerDashboard(ctx *gin.Context) {
 // @Description		Get organizer dashboard all users
 // @Tags			organizer
 // @Produce			json
+// @Security		BearerToken
 // @Router			/organizer/dashboard/events	[get]
 // @Success			200		{object}	dto.Response
-// @Failure			403		{object}	dto.ErrorResponse
+// @Failure			404		{object}	dto.ErrorResponse
 // @Failure			500		{object}	dto.ErrorResponse
 func (o *OrganizerController) GetOrganizerEvent(ctx *gin.Context) {
 	token, _ := ctx.Get("token")
@@ -72,15 +73,6 @@ func (o *OrganizerController) GetOrganizerEvent(ctx *gin.Context) {
 
 	if err != nil {
 		log.Println(err.Error())
-		if errors.Is(err, custom_error.EventNotFound) {
-			ctx.JSON(http.StatusForbidden, dto.ErrorResponse{
-				Success: false,
-				Message: err.Error(),
-			})
-
-			return
-		}
-
 		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: true,
 			Message: "internal server error",
