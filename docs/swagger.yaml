@@ -589,7 +589,7 @@ paths:
         in: formData
         name: img_url
         required: true
-        type: string
+        type: file
       - description: description
         in: formData
         name: description
@@ -621,35 +621,50 @@ paths:
         in: formData
         name: community_id
         type: string
-      - description: category_id
+      - collectionFormat: multi
+        description: category_id
         in: formData
+        items:
+          type: integer
         name: category_id
         required: true
-        type: string
+        type: array
       - description: location_name
         in: formData
         name: location_name
         required: true
         type: string
-      - description: speaker_name
+      - collectionFormat: multi
+        description: speaker_name
         in: formData
+        items:
+          type: string
         name: speaker_name
         required: true
-        type: string
-      - description: speaker_img_url
+        type: array
+      - collectionFormat: multi
+        description: speaker_img_url
         in: formData
+        items:
+          type: string
         name: speaker_img_url
-        type: string
-      - description: speaker_position
+        type: array
+      - collectionFormat: multi
+        description: speaker_position
         in: formData
+        items:
+          type: string
         name: speaker_position
         required: true
-        type: string
-      - description: speaker_company
+        type: array
+      - collectionFormat: multi
+        description: speaker_company
         in: formData
+        items:
+          type: string
         name: speaker_company
         required: true
-        type: string
+        type: array
       produces:
       - application/json
       responses:

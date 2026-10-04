@@ -2,9 +2,12 @@ package controller
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
+	"path"
 	"strconv"
+	"time"
 
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/dto"
 	custom_error "github.com/alfannurfaiz9/eventhub-backend.git/internal/error"
@@ -278,21 +281,21 @@ func (e *EventController) SaveEvent(ctx *gin.Context) {
 // @Produce			json
 // @Security		BearerToken
 // @Router			/events/create	[post]
-// @Param			title				formData	string	true	"title"
-// @Param			bio					formData	string	true	"bio"
-// @Param			img_url				formData	string	true	"img_url"
-// @Param			description			formData	string	true	"description"
-// @Param			start_at			formData	string	true	"start_at" 	format(date-time)
-// @Param			end_at				formData	string	true	"end_at" 	format(date-time)
-// @Param			format				formData	string	true	"format"
-// @Param			capacity			formData	string	true	"capacity"
-// @Param			community_id		formData	string	false	"community_id"
-// @Param			category_id			formData	string	true	"category_id"
-// @Param			location_name		formData	string	true	"location_name"
-// @Param			speaker_name		formData	string	true	"speaker_name"
-// @Param			speaker_img_url		formData	string	false	"speaker_img_url"
-// @Param			speaker_position	formData	string	true	"speaker_position"
-// @Param			speaker_company		formData	string	true	"speaker_company"
+// @Param			title				formData	string		true	"title"
+// @Param			bio					formData	string		true	"bio"
+// @Param			img_url				formData	file		true	"img_url"
+// @Param			description			formData	string		true	"description"
+// @Param			start_at			formData	string		true	"start_at" 			format(date-time)
+// @Param			end_at				formData	string		true	"end_at" 			format(date-time)
+// @Param			format				formData	string		true	"format"
+// @Param			capacity			formData	string		true	"capacity"
+// @Param			community_id		formData	string		false	"community_id"
+// @Param			category_id			formData	[]int		true	"category_id"		collectionFormat(multi)
+// @Param			location_name		formData	string		true	"location_name"
+// @Param			speaker_name		formData	[]string	true	"speaker_name" 		collectionFormat(multi)
+// @Param			speaker_img_url		formData	[]string	false	"speaker_img_url" 	collectionFormat(multi)
+// @Param			speaker_position	formData	[]string	true	"speaker_position"	collectionFormat(multi)
+// @Param			speaker_company		formData	[]string	true	"speaker_company" 	collectionFormat(multi)
 // @Success			201		{object}	dto.Response
 // @Failure			500		{object}	dto.ErrorResponse
 func (e *EventController) CreateEvent(ctx *gin.Context) {
@@ -302,20 +305,36 @@ func (e *EventController) CreateEvent(ctx *gin.Context) {
 		log.Println(err.Error())
 		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
-			Message: err.Error(),
+			Message: "internal server error",
 		})
 
 		return
 	}
 
-	token, _ := ctx.Get("token")
-	claims, _ := token.(pkg.JWTClaims)
+	var imgUrl string
+	filename := fmt.Sprintf("%d_%s%s", time.Now().UnixNano(), "event", path.Ext(body.Img.Filename))
+	filepath := path.Join("public", "img", filename)
 
-	if err := e.es.CreateEvent(ctx.Request.Context(), body, claims.Id); err != nil {
+	if err := ctx.SaveUploadedFile(&body.Img, filepath); err != nil {
 		log.Println(err.Error())
 		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
-			Message: err.Error(),
+			Message: "internal server error",
+		})
+
+		return
+	}
+
+	imgUrl = filename
+
+	token, _ := ctx.Get("token")
+	claims, _ := token.(pkg.JWTClaims)
+
+	if err := e.es.CreateEvent(ctx.Request.Context(), body, claims.Id, imgUrl); err != nil {
+		log.Println(err.Error())
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
+			Success: false,
+			Message: "internal server error",
 		})
 
 		return

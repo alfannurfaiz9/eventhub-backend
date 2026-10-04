@@ -150,7 +150,7 @@ func (u *UserController) ChangeUserProfile(ctx *gin.Context) {
 	var imgUrl string
 
 	if body.Img != nil {
-		filename := fmt.Sprintf("%d_%s%s", time.Now().UnixNano(), body.FullName, path.Ext(body.Img.Filename))
+		filename := fmt.Sprintf("%d_%s%s", time.Now().UnixNano(), "user", path.Ext(body.Img.Filename))
 		filepath := path.Join("public", "img", filename)
 
 		if err := ctx.SaveUploadedFile(body.Img, filepath); err != nil {
@@ -163,8 +163,10 @@ func (u *UserController) ChangeUserProfile(ctx *gin.Context) {
 			return
 		}
 
-		savedPath := fmt.Sprintf("img/%s", filename)
-		imgUrl = savedPath
+		imgUrl = filename
+
+		fmt.Println(body.Img.Filename)
+
 	}
 
 	token, _ := ctx.Get("token")

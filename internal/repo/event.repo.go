@@ -3,6 +3,7 @@ package repo
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	custom_error "github.com/alfannurfaiz9/eventhub-backend.git/internal/error"
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/model"
@@ -239,12 +240,20 @@ func (e *EventRepo) InsertEvent(ctx context.Context, body model.Event, db DBTX) 
 	return id, nil
 }
 
-func (e *EventRepo) InsertEventCategory(ctx context.Context, body model.EventCategory, db DBTX) (pgconn.CommandTag, error) {
+func (e *EventRepo) InsertEventCategory(ctx context.Context, body []model.EventCategory, db DBTX) (pgconn.CommandTag, error) {
 	sql := `
 	INSERT INTO event_category(event_id, category_id)
-	VALUES($1, $2)
+	VALUES
 	`
-	args := []any{body.EventId, body.CategoryId}
+	args := []any{}
+	for i, v := range body {
+		n := (i * 2) + 1
+		sql += fmt.Sprintf("($%d, $%d)", n, n+1)
+		args = append(args, v.EventId, v.CategoryId)
+		if i < len(body)-1 {
+			sql += ","
+		}
+	}
 
 	return db.Exec(ctx, sql, args...)
 }

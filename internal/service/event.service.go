@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/dto"
@@ -118,7 +119,7 @@ func (e *EventService) SaveEvent(ctx context.Context, userId, eventId int) error
 	return e.er.SaveEvent(ctx, userId, eventId, e.db)
 }
 
-func (e *EventService) CreateEvent(ctx context.Context, body dto.CreateEvent, organizerId int) error {
+func (e *EventService) CreateEvent(ctx context.Context, body dto.CreateEvent, organizerId int, eventImg string) error {
 	tx, err := e.db.Begin(ctx)
 	if err != nil {
 		return err
@@ -147,7 +148,7 @@ func (e *EventService) CreateEvent(ctx context.Context, body dto.CreateEvent, or
 
 	eventId, err := e.er.InsertEvent(ctx, model.Event{
 		Title:       body.Title,
-		ImgUrl:      body.ImgUrl,
+		ImgUrl:      &eventImg,
 		Description: body.Description,
 		StartAt:     body.StartAt,
 		EndAt:       body.EndAt,
@@ -161,12 +162,19 @@ func (e *EventService) CreateEvent(ctx context.Context, body dto.CreateEvent, or
 		return err
 	}
 
-	cmdEc, err := e.er.InsertEventCategory(ctx, model.EventCategory{
-		EventId:    eventId,
-		CategoryId: body.CategoryId,
-	}, tx)
+	catIds := make([]model.EventCategory, 0, len(body.CategoryId))
+	for _, v := range body.CategoryId {
+		catIds = append(catIds, model.EventCategory{
+			EventId:    eventId,
+			CategoryId: v,
+		})
+	}
+
+	cmdEc, err := e.er.InsertEventCategory(ctx, catIds, tx)
 
 	if err != nil {
+		fmt.Println(catIds)
+
 		return err
 	}
 
