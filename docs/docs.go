@@ -644,6 +644,9 @@ const docTemplate = `{
                     }
                 ],
                 "description": "Create new event",
+                "consumes": [
+                    "multipart/form-data"
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -653,13 +656,109 @@ const docTemplate = `{
                 "summary": "Create new event",
                 "parameters": [
                     {
-                        "description": "body to create event",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.CreateEvent"
-                        }
+                        "type": "string",
+                        "description": "title",
+                        "name": "title",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "bio",
+                        "name": "bio",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "img_url",
+                        "name": "img_url",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "description",
+                        "name": "description",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "start_at",
+                        "name": "start_at",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "end_at",
+                        "name": "end_at",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "format",
+                        "name": "format",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "capacity",
+                        "name": "capacity",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "community_id",
+                        "name": "community_id",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "category_id",
+                        "name": "category_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "location_name",
+                        "name": "location_name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "speaker_name",
+                        "name": "speaker_name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "speaker_img_url",
+                        "name": "speaker_img_url",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "speaker_position",
+                        "name": "speaker_position",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "speaker_company",
+                        "name": "speaker_company",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1227,53 +1326,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "new_password": {
-                    "type": "string"
-                }
-            }
-        },
-        "dto.CreateEvent": {
-            "type": "object",
-            "properties": {
-                "capacity": {
-                    "type": "integer"
-                },
-                "category_id": {
-                    "type": "integer"
-                },
-                "community_id": {
-                    "type": "integer"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "end_at": {
-                    "type": "string"
-                },
-                "format": {
-                    "type": "string"
-                },
-                "img_url": {
-                    "type": "string"
-                },
-                "location_name": {
-                    "type": "string"
-                },
-                "speaker_company": {
-                    "type": "string"
-                },
-                "speaker_img_url": {
-                    "type": "string"
-                },
-                "speaker_name": {
-                    "type": "string"
-                },
-                "speaker_position": {
-                    "type": "string"
-                },
-                "start_at": {
-                    "type": "string"
-                },
-                "title": {
                     "type": "string"
                 }
             }

@@ -274,16 +274,31 @@ func (e *EventController) SaveEvent(ctx *gin.Context) {
 // @Summary			Create new event
 // @Description		Create new event
 // @Tags			events
+// @Accept			mpfd
 // @Produce			json
 // @Security		BearerToken
 // @Router			/events/create	[post]
-// @Param			data	body	dto.CreateEvent	true	"body to create event"
+// @Param			title				formData	string	true	"title"
+// @Param			bio					formData	string	true	"bio"
+// @Param			img_url				formData	string	true	"img_url"
+// @Param			description			formData	string	true	"description"
+// @Param			start_at			formData	string	true	"start_at" 	format(date-time)
+// @Param			end_at				formData	string	true	"end_at" 	format(date-time)
+// @Param			format				formData	string	true	"format"
+// @Param			capacity			formData	string	true	"capacity"
+// @Param			community_id		formData	string	false	"community_id"
+// @Param			category_id			formData	string	true	"category_id"
+// @Param			location_name		formData	string	true	"location_name"
+// @Param			speaker_name		formData	string	true	"speaker_name"
+// @Param			speaker_img_url		formData	string	false	"speaker_img_url"
+// @Param			speaker_position	formData	string	true	"speaker_position"
+// @Param			speaker_company		formData	string	true	"speaker_company"
 // @Success			201		{object}	dto.Response
 // @Failure			500		{object}	dto.ErrorResponse
 func (e *EventController) CreateEvent(ctx *gin.Context) {
 	var body dto.CreateEvent
 
-	if err := ctx.ShouldBindWith(&body, binding.JSON); err != nil {
+	if err := ctx.ShouldBindWith(&body, binding.FormMultipart); err != nil {
 		log.Println(err.Error())
 		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,

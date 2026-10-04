@@ -16,20 +16,20 @@ type Event struct {
 }
 
 type CreateEvent struct {
-	Title           string    `json:"title"`
-	ImgUrl          *string   `json:"img_url"`
-	Description     string    `json:"description"`
-	StartAt         time.Time `json:"start_at"`
-	EndAt           time.Time `json:"end_at"`
-	Format          string    `json:"format"`
-	Capacity        int       `json:"capacity"`
-	CommunityId     *int      `json:"community_id"`
-	CategoryId      int       `json:"category_id"`
-	LocationName    string    `json:"location_name"`
-	SpeakerName     string    `json:"speaker_name"`
-	SpeakerImgUrl   string    `json:"speaker_img_url"`
-	SpeakerPosition string    `json:"speaker_position"`
-	SpeakerCompany  string    `json:"speaker_company"`
+	Title           string    `form:"title"`
+	ImgUrl          *string   `form:"img_url"`
+	Description     string    `form:"description"`
+	StartAt         time.Time `form:"start_at"`
+	EndAt           time.Time `form:"end_at"`
+	Format          string    `form:"format"`
+	Capacity        int       `form:"capacity"`
+	CommunityId     *int      `form:"community_id"`
+	CategoryId      int       `form:"category_id"`
+	LocationName    string    `form:"location_name"`
+	SpeakerName     string    `form:"speaker_name"`
+	SpeakerImgUrl   string    `form:"speaker_img_url"`
+	SpeakerPosition string    `form:"speaker_position"`
+	SpeakerCompany  string    `form:"speaker_company"`
 }
 
 type EventCategory struct {

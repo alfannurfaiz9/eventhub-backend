@@ -3,7 +3,6 @@ package middleware
 import (
 	"encoding/json"
 	"errors"
-	"log"
 	"net/http"
 	"slices"
 	"strings"
@@ -52,13 +51,6 @@ func (a *AuthMiddleWare) CheckToken(ctx *gin.Context) {
 	}
 
 	blacklistRedis, err := a.rdb.Get(ctx, "eventhub:blacklist_token").Result()
-
-	if err != nil {
-		if errors.Is(err, redis.Nil) {
-			log.Println("redis key not exist")
-		}
-		log.Println(err.Error())
-	}
 
 	var blacklist []string
 	json.Unmarshal([]byte(blacklistRedis), &blacklist)

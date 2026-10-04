@@ -7,37 +7,6 @@ definitions:
       new_password:
         type: string
     type: object
-  dto.CreateEvent:
-    properties:
-      capacity:
-        type: integer
-      category_id:
-        type: integer
-      community_id:
-        type: integer
-      description:
-        type: string
-      end_at:
-        type: string
-      format:
-        type: string
-      img_url:
-        type: string
-      location_name:
-        type: string
-      speaker_company:
-        type: string
-      speaker_img_url:
-        type: string
-      speaker_name:
-        type: string
-      speaker_position:
-        type: string
-      start_at:
-        type: string
-      title:
-        type: string
-    type: object
   dto.ErrorResponse:
     properties:
       message:
@@ -602,14 +571,85 @@ paths:
       - events
   /events/create:
     post:
+      consumes:
+      - multipart/form-data
       description: Create new event
       parameters:
-      - description: body to create event
-        in: body
-        name: data
+      - description: title
+        in: formData
+        name: title
         required: true
-        schema:
-          $ref: '#/definitions/dto.CreateEvent'
+        type: string
+      - description: bio
+        in: formData
+        name: bio
+        required: true
+        type: string
+      - description: img_url
+        in: formData
+        name: img_url
+        required: true
+        type: string
+      - description: description
+        in: formData
+        name: description
+        required: true
+        type: string
+      - description: start_at
+        format: date-time
+        in: formData
+        name: start_at
+        required: true
+        type: string
+      - description: end_at
+        format: date-time
+        in: formData
+        name: end_at
+        required: true
+        type: string
+      - description: format
+        in: formData
+        name: format
+        required: true
+        type: string
+      - description: capacity
+        in: formData
+        name: capacity
+        required: true
+        type: string
+      - description: community_id
+        in: formData
+        name: community_id
+        type: string
+      - description: category_id
+        in: formData
+        name: category_id
+        required: true
+        type: string
+      - description: location_name
+        in: formData
+        name: location_name
+        required: true
+        type: string
+      - description: speaker_name
+        in: formData
+        name: speaker_name
+        required: true
+        type: string
+      - description: speaker_img_url
+        in: formData
+        name: speaker_img_url
+        type: string
+      - description: speaker_position
+        in: formData
+        name: speaker_position
+        required: true
+        type: string
+      - description: speaker_company
+        in: formData
+        name: speaker_company
+        required: true
+        type: string
       produces:
       - application/json
       responses:
