@@ -23,6 +23,18 @@ func NewTestimonyController(ts *service.TestimonyService) *TestimonyController {
 	}
 }
 
+// SetTestimony
+//
+// @Summary			Set testimony
+// @Description		Set testimony
+// @Tags			testimonies
+// @Produce			json
+// @Security		BearerToken
+// @Router			/testimonies		[post]
+// @Param			data	body		dto.Testimony	true	"body"
+// @Success			200		{object}	dto.Response
+// @Failure			401		{object}	dto.ErrorResponse
+// @Failure			500		{object}	dto.ErrorResponse
 func (t *TestimonyController) SetTestimony(ctx *gin.Context) {
 	var body dto.Testimony
 
@@ -60,6 +72,15 @@ func (t *TestimonyController) SetTestimony(ctx *gin.Context) {
 	})
 }
 
+// GetTestimony
+//
+// @Summary			Get testimony
+// @Description		Get testimony
+// @Tags			testimonies
+// @Produce			json
+// @Router			/testimonies		[get]
+// @Success			200		{object}	dto.Response
+// @Failure			500		{object}	dto.ErrorResponse
 func (t *TestimonyController) GetTestimony(ctx *gin.Context) {
 	result, err := t.ts.GetTestimony(ctx.Request.Context())
 

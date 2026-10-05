@@ -44,7 +44,11 @@ definitions:
         type: string
       password:
         example: yourpassword
+        minLength: 6
         type: string
+    required:
+    - email
+    - password
     type: object
   dto.Response:
     properties:
@@ -55,6 +59,19 @@ definitions:
       success:
         example: true
         type: boolean
+    type: object
+  dto.Testimony:
+    properties:
+      company:
+        type: string
+      id:
+        type: integer
+      message:
+        type: string
+      name:
+        type: string
+      position:
+        type: string
     type: object
 host: localhost:9000
 info:
@@ -764,6 +781,52 @@ paths:
       summary: Get organizer dashboard all users
       tags:
       - organizer
+  /testimonies:
+    get:
+      description: Get testimony
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Get testimony
+      tags:
+      - testimonies
+    post:
+      description: Set testimony
+      parameters:
+      - description: body
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Testimony'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerToken: []
+      summary: Set testimony
+      tags:
+      - testimonies
   /user/change-password:
     patch:
       consumes:

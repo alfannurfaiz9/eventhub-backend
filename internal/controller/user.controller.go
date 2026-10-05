@@ -164,9 +164,6 @@ func (u *UserController) ChangeUserProfile(ctx *gin.Context) {
 		}
 
 		imgUrl = filename
-
-		fmt.Println(body.Img.Filename)
-
 	}
 
 	token, _ := ctx.Get("token")

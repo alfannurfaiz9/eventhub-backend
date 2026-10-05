@@ -1090,6 +1090,78 @@ const docTemplate = `{
                 }
             }
         },
+        "/testimonies": {
+            "get": {
+                "description": "Get testimony",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "testimonies"
+                ],
+                "summary": "Get testimony",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerToken": []
+                    }
+                ],
+                "description": "Set testimony",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "testimonies"
+                ],
+                "summary": "Set testimony",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.Testimony"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/user/change-password": {
             "patch": {
                 "security": [
@@ -1381,6 +1453,10 @@ const docTemplate = `{
         },
         "dto.Register": {
             "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
             "properties": {
                 "email": {
                     "type": "string",
@@ -1392,6 +1468,7 @@ const docTemplate = `{
                 },
                 "password": {
                     "type": "string",
+                    "minLength": 6,
                     "example": "yourpassword"
                 }
             }
@@ -1407,6 +1484,26 @@ const docTemplate = `{
                 "success": {
                     "type": "boolean",
                     "example": true
+                }
+            }
+        },
+        "dto.Testimony": {
+            "type": "object",
+            "properties": {
+                "company": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "position": {
+                    "type": "string"
                 }
             }
         }
