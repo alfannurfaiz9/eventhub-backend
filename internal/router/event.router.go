@@ -1,6 +1,8 @@
 package router
 
 import (
+	"path"
+
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/controller"
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/middleware"
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/repo"
@@ -22,6 +24,7 @@ func initEventRouter(router *gin.Engine, db *pgxpool.Pool, rdb *redis.Client) {
 	r.GET("", ec.GetEvents)
 	r.GET("upcoming", ec.GetUpcomingEvent)
 	r.GET("detail/:id", ec.GetEventDetail)
+	r.Static("img", path.Join("public", "img"))
 	r.POST(":event_id/join", am.CheckToken, am.UserMiddleware, ec.JoinEvent)
 	r.DELETE(":event_id/leave", am.CheckToken, am.UserMiddleware, ec.LeaveEvent)
 	r.POST(":event_id/save", am.CheckToken, am.UserMiddleware, ec.SaveEvent)

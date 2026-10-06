@@ -107,7 +107,7 @@ func (a *AuthController) Login(ctx *gin.Context) {
 		return
 	}
 
-	token, err := a.as.Login(ctx.Request.Context(), body)
+	userInfo, err := a.as.Login(ctx.Request.Context(), body)
 
 	if err != nil {
 		log.Println(err.Error())
@@ -136,9 +136,7 @@ func (a *AuthController) Login(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, dto.Response{
 		Success: true,
-		Data: gin.H{
-			"token": token,
-		},
+		Data:    userInfo,
 		Message: "login success",
 	})
 }

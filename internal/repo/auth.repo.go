@@ -21,11 +21,17 @@ func NewAuthRepo(db *pgxpool.Pool) *AuthRepo {
 }
 
 func (a *AuthRepo) FindUser(ctx context.Context, email string) (model.User, error) {
-	sql := "SELECT id, email,password, role FROM users WHERE email=$1"
+	sql := "SELECT id, full_name, img_url, email, password, role FROM users WHERE email=$1"
 	args := []any{email}
 
 	var data model.User
-	if err := a.db.QueryRow(ctx, sql, args...).Scan(&data.Id, &data.Email, &data.Password, &data.Role); err != nil {
+	if err := a.db.QueryRow(ctx, sql, args...).Scan(
+		&data.Id,
+		&data.FullName,
+		&data.ImgUrl,
+		&data.Email,
+		&data.Password,
+		&data.Role); err != nil {
 		return model.User{}, err
 	}
 

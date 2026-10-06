@@ -20,7 +20,7 @@ func NewCommunityRepo(db *pgxpool.Pool) *CommunityRepo {
 
 func (c *CommunityRepo) GetCommunities(ctx context.Context, categories string, page int) ([]model.CommunityList, error) {
 	sql := `
-	SELECT communities.name, communities.img_url,communities.description, STRING_AGG(categories.name, ', '), COUNT(user_community.community_id), COUNT(events.id)
+	SELECT communities.id, communities.name, communities.img_url,communities.description, STRING_AGG(categories.name, ', '), COUNT(user_community.community_id), COUNT(events.id)
 	FROM communities
 	LEFT JOIN community_category ON community_category.community_id = communities.id
 	LEFT JOIN categories ON categories.id = community_category.category_id
@@ -45,6 +45,7 @@ func (c *CommunityRepo) GetCommunities(ctx context.Context, categories string, p
 		var community model.CommunityList
 
 		if err := rows.Scan(
+			&community.Community.Id,
 			&community.Community.Name,
 			&community.Community.ImgUrl,
 			&community.Community.Description,

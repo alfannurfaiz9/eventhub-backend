@@ -21,6 +21,8 @@ func initUserRouter(router *gin.Engine, db *pgxpool.Pool, rdb *redis.Client) {
 	us := service.NewUserService(ur)
 	uc := controller.NewUserController(us)
 
+	r.Static("img", path.Join("public", "img"))
+
 	r.Use(am.CheckToken)
 
 	r.GET("info", am.UserMiddleware, uc.GetUserInformation)
@@ -29,5 +31,4 @@ func initUserRouter(router *gin.Engine, db *pgxpool.Pool, rdb *redis.Client) {
 	r.GET("notification", uc.GetNotification)
 	r.PATCH("edit", uc.ChangeUserProfile)
 	r.PATCH("change-password", uc.ChangeUserPassword)
-	r.Static("img", path.Join("public", "img"))
 }

@@ -46,6 +46,7 @@ type EventSpeaker struct {
 }
 
 type EventList struct {
+	Id            int       `json:"id"`
 	Title         string    `json:"title"`
 	ImgUrl        *string   `json:"img_url"`
 	Category      string    `json:"category"`

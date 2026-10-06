@@ -1,6 +1,8 @@
 package router
 
 import (
+	"path"
+
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/controller"
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/middleware"
 	"github.com/alfannurfaiz9/eventhub-backend.git/internal/repo"
@@ -18,6 +20,8 @@ func initCommunityRouter(router *gin.Engine, db *pgxpool.Pool, rdb *redis.Client
 	cr := repo.NewCommunityRepo(db)
 	cs := service.NewCommunityService(cr)
 	cc := controller.NewCommunityController(cs)
+
+	r.Static("img", path.Join("public", "img"))
 
 	r.GET("", cc.GetCommunities)
 	r.GET(":id", cc.GetCommunityDetail)

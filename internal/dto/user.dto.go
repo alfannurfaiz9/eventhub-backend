@@ -43,6 +43,13 @@ type UserInformation struct {
 	ImgUrl   *string `json:"img_url"`
 }
 
+type LoginInformation struct {
+	FullName string  `json:"full_name"`
+	Email    string  `json:"email"`
+	ImgUrl   *string `json:"img_url"`
+	Token    string  `json:"token"`
+}
+
 type Notification struct {
 	Title       string    `json:"title"`
 	Description string    `json:"description"`

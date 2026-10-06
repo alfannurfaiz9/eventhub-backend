@@ -40,6 +40,7 @@ func (e *EventService) GetEvents(ctx context.Context, search, location, category
 
 	for _, v := range result {
 		data = append(data, dto.EventList{
+			Id:            v.Event.Id,
 			Title:         v.Event.Title,
 			ImgUrl:        v.Event.ImgUrl,
 			Category:      v.Category.Name,

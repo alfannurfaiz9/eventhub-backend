@@ -57,25 +57,34 @@ func (a *AuthService) Register(ctx context.Context, body dto.Register) error {
 	return nil
 }
 
-func (a *AuthService) Login(ctx context.Context, body dto.Login) (string, error) {
+func (a *AuthService) Login(ctx context.Context, body dto.Login) (dto.LoginInformation, error) {
 	if len(body.Email) == 0 || len(body.Password) == 0 {
-		return "", custom_error.EmptyLoginField
+		return dto.LoginInformation{}, custom_error.EmptyLoginField
 	}
 
 	user, err := a.ar.FindUser(ctx, body.Email)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return "", custom_error.LoginInvalidEmailOrPassword
+			return dto.LoginInformation{}, custom_error.LoginInvalidEmailOrPassword
 		}
-		return "", err
+		return dto.LoginInformation{}, err
 	}
 
 	if err := pkg.CompareHash(body.Password, user.Password); err != nil {
-		return "", custom_error.LoginInvalidEmailOrPassword
+		return dto.LoginInformation{}, custom_error.LoginInvalidEmailOrPassword
 	}
 
 	claims := pkg.NewJWTClaims(user.Id, user.Role)
-	return claims.GenToken()
+	token, err := claims.GenToken()
+
+	result := dto.LoginInformation{
+		FullName: user.FullName,
+		ImgUrl:   user.ImgUrl,
+		Email:    user.Email,
+		Token:    token,
+	}
+
+	return result, err
 }
 
 func (a *AuthService) Logout(ctx context.Context, token string) error {

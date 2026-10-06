@@ -597,11 +597,6 @@ paths:
         name: title
         required: true
         type: string
-      - description: bio
-        in: formData
-        name: bio
-        required: true
-        type: string
       - description: img_url
         in: formData
         name: img_url

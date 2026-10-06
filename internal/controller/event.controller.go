@@ -53,6 +53,7 @@ func (e *EventController) GetEvents(ctx *gin.Context) {
 	events, err := e.es.GetEvents(ctx.Request.Context(), search, location, category, pageNum)
 
 	if err != nil {
+		log.Println(err.Error())
 		if errors.Is(err, custom_error.EventErrorPage) {
 			ctx.JSON(http.StatusNotFound, dto.ErrorResponse{
 				Success: false,
@@ -282,7 +283,6 @@ func (e *EventController) SaveEvent(ctx *gin.Context) {
 // @Security		BearerToken
 // @Router			/events/create	[post]
 // @Param			title				formData	string		true	"title"
-// @Param			bio					formData	string		true	"bio"
 // @Param			img_url				formData	file		true	"img_url"
 // @Param			description			formData	string		true	"description"
 // @Param			start_at			formData	string		true	"start_at" 			format(date-time)

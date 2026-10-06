@@ -25,7 +25,7 @@ func NewEventRepo() *EventRepo {
 
 func (e *EventRepo) GetEvents(ctx context.Context, search, location, category string, page int, db DBTX) ([]model.EventList, error) {
 	sql := `
-	SELECT events.title, events.img_url, STRING_AGG(categories.name, ', '), events.start_at, locations.name, COUNT(user_event.event_id), events.capacity 
+	SELECT events.id, events.title, events.img_url, STRING_AGG(categories.name, ', '), events.start_at, locations.name, COUNT(user_event.event_id), events.capacity 
 	FROM events 
 	LEFT JOIN locations ON locations.id = events.location_id 
 	LEFT JOIN communities ON communities.id = events.community_id 
@@ -33,7 +33,7 @@ func (e *EventRepo) GetEvents(ctx context.Context, search, location, category st
 	LEFT JOIN categories ON categories.id = event_category.category_id 
 	LEFT JOIN user_event ON user_event.event_id = events.id 
 	WHERE events.title ILIKE $1 AND locations.name ILIKE $2
-	GROUP BY events.id, categories.id, locations.id
+	GROUP BY events.id, locations.id
 	HAVING STRING_AGG(categories.name, ', ') ILIKE $3
 	LIMIT $4 OFFSET $5`
 	limit := 6
@@ -52,6 +52,7 @@ func (e *EventRepo) GetEvents(ctx context.Context, search, location, category st
 		var event model.EventList
 
 		if err := rows.Scan(
+			&event.Event.Id,
 			&event.Event.Title,
 			&event.Event.ImgUrl,
 			&event.Category.Name,

@@ -8,6 +8,7 @@ type Community struct {
 }
 
 type CommunityList struct {
+	Id            int    `json:"id"`
 	Name          string `json:"name"`
 	Image         string `json:"img_url"`
 	Description   string `json:"description"`

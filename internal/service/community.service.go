@@ -35,6 +35,7 @@ func (c *CommunityService) GetCommunities(ctx context.Context, categories string
 
 	for _, v := range result {
 		data = append(data, dto.CommunityList{
+			Id:            v.Community.Id,
 			Name:          v.Community.Name,
 			Image:         v.Community.ImgUrl,
 			Description:   v.Community.Description,
