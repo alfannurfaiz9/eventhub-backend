@@ -9,3 +9,4 @@ db
 public
 postman
 .postman
+.dockerignore

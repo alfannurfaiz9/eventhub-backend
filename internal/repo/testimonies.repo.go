@@ -22,7 +22,8 @@ func (t *TestimonyRepo) GetTestimony(ctx context.Context) ([]model.TestimonyList
 	sql := `
 	SELECT  testimonies.id, users.full_name, testimonies.company, testimonies.position, testimonies.message
 	FROM testimonies
-	JOIN users ON users.id = testimonies.user_id`
+	JOIN users ON users.id = testimonies.user_id
+	LIMIT 3`
 
 	rows, err := t.db.Query(ctx, sql)
 
