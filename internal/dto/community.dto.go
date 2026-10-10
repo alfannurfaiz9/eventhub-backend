@@ -1,10 +1,10 @@
 package dto
 
 type Community struct {
-	Id          int    `json:"id"`
-	Name        string `json:"name"`
-	ImgUrl      string `json:"img_url"`
-	Description string `json:"description"`
+	Id          int     `json:"id"`
+	Name        *string `json:"name"`
+	ImgUrl      string  `json:"img_url"`
+	Description string  `json:"description"`
 }
 
 type CommunityList struct {

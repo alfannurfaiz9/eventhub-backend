@@ -55,7 +55,18 @@ func (e *EventService) GetEvents(ctx context.Context, search, location, category
 }
 
 func (e *EventService) GetEventDetail(ctx context.Context, id int) (dto.EventDetail, error) {
-	result, err := e.er.GetEventDetail(ctx, id, e.db)
+	tx, err := e.db.Begin(ctx)
+	if err != nil {
+		return dto.EventDetail{}, err
+	}
+
+	defer func() {
+		if err := tx.Rollback(ctx); err != nil {
+			log.Println(err)
+		}
+	}()
+
+	result, err := e.er.GetEventDetail(ctx, id, tx)
 
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -64,17 +75,54 @@ func (e *EventService) GetEventDetail(ctx context.Context, id int) (dto.EventDet
 		return dto.EventDetail{}, err
 	}
 
+	allSpeakers, err := e.er.GetEventSpeakers(ctx, id, tx)
+	if err != nil {
+		return dto.EventDetail{}, err
+	}
+
+	speakers := make([]dto.Speaker, 0, len(allSpeakers))
+	for _, v := range allSpeakers {
+		speakers = append(speakers, dto.Speaker{
+			Id:       v.Id,
+			Name:     v.Name,
+			Imgurl:   v.ImgUrl,
+			Position: v.Position,
+			Company:  v.Company,
+		})
+	}
+
+	allDiscussion, err := e.er.GetEventDiscussion(ctx, id, tx)
+	if err != nil {
+		return dto.EventDetail{}, err
+	}
+
+	discussions := make([]dto.EventDiscussion, 0, len(allDiscussion))
+	for _, v := range allDiscussion {
+		discussions = append(discussions, dto.EventDiscussion{
+			FullName:  v.FullName,
+			ImgUrl:    *v.ImgUrl,
+			Message:   v.Message,
+			CreatedAt: v.CreatedAt,
+		})
+	}
+
 	data := dto.EventDetail{
-		Title:         result.Event.Title,
-		ImgUrl:        *result.Event.ImgUrl,
-		Description:   result.Event.Description,
-		Category:      result.Category.Name,
-		StartAt:       result.Event.StartAt,
-		Location:      result.Location.Name,
-		TotalAttendee: result.TotalAttendee,
-		Capacity:      result.Event.Capacity,
-		Organizer:     result.User.FullName,
-		Community:     result.Community.Name,
+		Title:           result.Event.Title,
+		ImgUrl:          *result.Event.ImgUrl,
+		Description:     result.Event.Description,
+		Category:        result.Category.Name,
+		StartAt:         result.Event.StartAt,
+		Location:        result.Location.Name,
+		TotalAttendee:   result.TotalAttendee,
+		Capacity:        result.Event.Capacity,
+		Organizer:       result.User.FullName,
+		Community:       result.Community.Name,
+		Speaker:         speakers,
+		EventDiscussion: discussions,
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		log.Println(err)
 	}
 
 	return data, nil

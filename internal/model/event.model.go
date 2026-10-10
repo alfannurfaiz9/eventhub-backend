@@ -37,11 +37,12 @@ type EventSpeaker struct {
 }
 
 type EventDiscussion struct {
-	Id        int       `json:"id"`
-	UserId    int       `json:"user_id"`
-	Message   string    `json:"message"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	Id        int       `db:"id"`
+	UserId    int       `db:"user_id"`
+	Message   string    `db:"message"`
+	CreatedAt time.Time `db:"created_at"`
+	UpdatedAt time.Time `db:"updated_at"`
+	User
 }
 
 type EventList struct {

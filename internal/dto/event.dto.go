@@ -56,17 +56,29 @@ type EventList struct {
 	Capacity      int       `json:"capacity"`
 }
 
+type EventDiscussion struct {
+	Id        int       `json:"id"`
+	UserId    int       `json:"user_id"`
+	FullName  string    `json:"full_name"`
+	ImgUrl    string    `json:"img_url"`
+	Message   string    `json:"message"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
 type EventDetail struct {
-	Title         string    `json:"title"`
-	ImgUrl        string    `json:"img_url"`
-	Description   string    `json:"description"`
-	Category      string    `json:"category"`
-	StartAt       time.Time `json:"start_at"`
-	Location      string    `json:"location"`
-	TotalAttendee int       `json:"total_attendee"`
-	Capacity      int       `json:"capacity"`
-	Organizer     string    `json:"organizer"`
-	Community     string    `json:"community"`
+	Title           string            `json:"title"`
+	ImgUrl          string            `json:"img_url"`
+	Description     string            `json:"description"`
+	Category        string            `json:"category"`
+	StartAt         time.Time         `json:"start_at"`
+	Location        string            `json:"location"`
+	TotalAttendee   int               `json:"total_attendee"`
+	Capacity        int               `json:"capacity"`
+	Organizer       string            `json:"organizer"`
+	Community       string            `json:"community"`
+	Speaker         []Speaker         `json:"speaker"`
+	EventDiscussion []EventDiscussion `json:"event_discussion"`
 }
 
 type JoinEvent struct {

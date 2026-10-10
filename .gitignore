@@ -10,3 +10,5 @@ public
 postman
 .postman
 .dockerignore
+Dockerfile
+docker-compose.yaml

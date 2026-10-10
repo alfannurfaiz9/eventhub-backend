@@ -39,7 +39,6 @@ func (a *AuthController) Register(ctx *gin.Context) {
 
 	if err := ctx.ShouldBindWith(&body, binding.JSON); err != nil {
 		log.Println(err.Error())
-
 		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
 			Message: "internal server error",
@@ -98,7 +97,6 @@ func (a *AuthController) Login(ctx *gin.Context) {
 
 	if err := ctx.ShouldBindWith(&body, binding.JSON); err != nil {
 		log.Println(err.Error())
-
 		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
 			Message: "internal server error",
@@ -155,6 +153,7 @@ func (a *AuthController) Logout(ctx *gin.Context) {
 	token := ctx.GetHeader("Authorization")
 
 	if err := a.as.Logout(ctx.Request.Context(), token); err != nil {
+		log.Println(err.Error())
 		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
 			Message: "internal server error",

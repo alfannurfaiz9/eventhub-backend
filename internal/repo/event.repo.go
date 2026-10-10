@@ -75,7 +75,7 @@ func (e *EventRepo) GetEvents(ctx context.Context, search, location, category st
 }
 
 func (e *EventRepo) GetEventDetail(ctx context.Context, id int, db DBTX) (model.EventDetail, error) {
-	sql := "SELECT events.title, events.img_url, events.description, categories.name, events.start_at, locations.name, COUNT(user_event.event_id), events.capacity, users.full_name, communities.name FROM events LEFT JOIN locations ON locations.id = events.location_id LEFT JOIN communities ON communities.id = events.community_id LEFT JOIN event_category ON event_category.event_id = events.id LEFT JOIN categories ON categories.id = event_category.category_id LEFT JOIN user_event ON user_event.event_id = events.id LEFT JOIN users ON users.id = events.organizer_id WHERE events.id = $1 GROUP BY events.id, categories.id, locations.id, users.id, communities.id"
+	sql := "SELECT events.title, events.img_url, events.description, categories.name, events.start_at, locations.name, COUNT(user_event.event_id), events.capacity, users.full_name, COALESCE(communities.name, 'No community') FROM events LEFT JOIN locations ON locations.id = events.location_id LEFT JOIN communities ON communities.id = events.community_id LEFT JOIN event_category ON event_category.event_id = events.id LEFT JOIN categories ON categories.id = event_category.category_id LEFT JOIN user_event ON user_event.event_id = events.id LEFT JOIN users ON users.id = events.organizer_id WHERE events.id = $1 GROUP BY events.id, categories.id, locations.id, users.id, communities.id"
 	args := []any{id}
 
 	var data model.EventDetail
@@ -95,6 +95,70 @@ func (e *EventRepo) GetEventDetail(ctx context.Context, id int, db DBTX) (model.
 	}
 
 	return data, nil
+}
+
+func (e *EventRepo) GetEventSpeakers(ctx context.Context, id int, db DBTX) ([]model.Speaker, error) {
+	sql := `
+	SELECT speakers.id, speakers.name, speakers.img_url, speakers.position, speakers.company
+	FROM event_speakers
+	LEFT JOIN events ON events.id = event_speakers.event_id
+	LEFT JOIN speakers ON speakers.id = event_speakers.event_id
+	WHERE events.id = $1
+	`
+	args := []any{id}
+	rows, err := db.Query(ctx, sql, args...)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var speakers []model.Speaker
+	for rows.Next() {
+		var speaker model.Speaker
+
+		if err := rows.Scan(
+			&speaker.Id,
+			&speaker.Name,
+			&speaker.ImgUrl,
+			&speaker.Position,
+			&speaker.Company,
+		); err != nil {
+			return nil, err
+		}
+		speakers = append(speakers, speaker)
+	}
+
+	return speakers, nil
+}
+
+func (e *EventRepo) GetEventDiscussion(ctx context.Context, id int, db DBTX) ([]model.EventDiscussion, error) {
+	sql := `
+	SELECT users.full_name, users.img_url, event_discussions.message, event_discussions.created_at
+	FROM event_discussions
+	LEFT JOIN users ON users.id = event_discussions.user_id
+	WHERE event_discussions.event_id = $1
+	`
+	args := []any{id}
+	rows, err := db.Query(ctx, sql, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	var discussions []model.EventDiscussion
+	for rows.Next() {
+		var discuss model.EventDiscussion
+		if err := rows.Scan(
+			&discuss.User.FullName,
+			&discuss.User.ImgUrl,
+			&discuss.Message,
+			&discuss.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		discussions = append(discussions, discuss)
+	}
+
+	return discussions, nil
 }
 
 func (e *EventRepo) JoinEvent(ctx context.Context, user_id int, event_id int, db DBTX) error {
