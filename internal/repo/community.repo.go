@@ -102,7 +102,7 @@ func (c *CommunityRepo) GetCommunityEvent(ctx context.Context, id int) ([]model.
 	LEFT JOIN categories ON categories.id = event_category.category_id 
 	LEFT JOIN user_event ON user_event.event_id = events.id 
 	WHERE events.community_id = $1
-	GROUP BY events.id, categories.id, locations.id`
+	GROUP BY events.id, locations.id`
 	args := []any{id}
 
 	rows, err := c.db.Query(ctx, sql, args...)

@@ -116,6 +116,7 @@ func (e *EventService) GetEventDetail(ctx context.Context, id int) (dto.EventDet
 		TotalAttendee:   result.TotalAttendee,
 		Capacity:        result.Event.Capacity,
 		Organizer:       result.User.FullName,
+		OrganizerImg:    result.User.ImgUrl,
 		Community:       result.Community.Name,
 		Speaker:         speakers,
 		EventDiscussion: discussions,

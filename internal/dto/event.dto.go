@@ -76,6 +76,7 @@ type EventDetail struct {
 	TotalAttendee   int               `json:"total_attendee"`
 	Capacity        int               `json:"capacity"`
 	Organizer       string            `json:"organizer"`
+	OrganizerImg    *string           `json:"organizer_img"`
 	Community       string            `json:"community"`
 	Speaker         []Speaker         `json:"speaker"`
 	EventDiscussion []EventDiscussion `json:"event_discussion"`
