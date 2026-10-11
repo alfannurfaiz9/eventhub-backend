@@ -124,6 +124,22 @@ func (c *CommunityService) GetCommunityMember(ctx context.Context, id int) ([]dt
 	return data, err
 }
 
+func (c *CommunityService) GetCommunityDiscussion(ctx context.Context, id int) ([]dto.CommunityDiscussion, error) {
+	result, err := c.cr.GetCommunityDiscussion(ctx, id)
+
+	data := make([]dto.CommunityDiscussion, 0, len(result))
+	for _, v := range result {
+		data = append(data, dto.CommunityDiscussion{
+			FullName:  v.User.FullName,
+			ImgUrl:    v.User.ImgUrl,
+			Message:   v.Message,
+			CreatedAt: v.CreatedAt,
+		})
+	}
+
+	return data, err
+}
+
 func (c *CommunityService) GetPopularCommunity(ctx context.Context) ([]dto.CommunityList, error) {
 	result, err := c.cr.GetPopularCommunity(ctx)
 

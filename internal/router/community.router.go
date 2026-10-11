@@ -27,6 +27,7 @@ func initCommunityRouter(router *gin.Engine, db *pgxpool.Pool, rdb *redis.Client
 	r.GET(":id", cc.GetCommunityDetail)
 	r.GET(":id/events", cc.GetCommunityEvent)
 	r.GET(":id/members", cc.GetCommunityMember)
+	r.GET(":id/discussions", cc.GetCommunityDiscussion)
 	r.GET("popular", cc.GetPopularCommunity)
 
 	r.POST(":community_id/join", am.CheckToken, am.UserMiddleware, cc.JoinCommunity)

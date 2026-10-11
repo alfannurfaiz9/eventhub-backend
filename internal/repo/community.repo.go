@@ -177,6 +177,37 @@ func (c *CommunityRepo) GetCommunityMember(ctx context.Context, id int) ([]model
 	return members, nil
 }
 
+func (c *CommunityRepo) GetCommunityDiscussion(ctx context.Context, id int) ([]model.CommunityDiscussion, error) {
+	sql := `
+	SELECT users.full_name,users.img_url, community_discussions.message, community_discussions.created_at
+	FROM community_discussions
+	LEFT JOIN users ON users.id = community_discussions.user_id
+	WHERE community_discussions.community_id = $1`
+	args := []any{id}
+
+	rows, err := c.db.Query(ctx, sql, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	var discussions []model.CommunityDiscussion
+	for rows.Next() {
+		var discussion model.CommunityDiscussion
+		if err := rows.Scan(
+			&discussion.User.FullName,
+			&discussion.User.ImgUrl,
+			&discussion.Message,
+			&discussion.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+
+		discussions = append(discussions, discussion)
+	}
+
+	return discussions, nil
+}
+
 func (c *CommunityRepo) GetPopularCommunity(ctx context.Context) ([]model.CommunityList, error) {
 	sql := `
 	SELECT communities.name, communities.img_url,communities.description, STRING_AGG(categories.name, ', '), COUNT(user_community.community_id), COUNT(events.id)

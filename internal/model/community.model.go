@@ -30,3 +30,13 @@ type UserCommunity struct {
 	CommunityId int       `db:"community_id"`
 	CreatedAt   time.Time `db:"created_at"`
 }
+
+type CommunityDiscussion struct {
+	Id          int       `db:"id"`
+	UserId      int       `db:"user_id"`
+	Message     string    `db:"message"`
+	CommunityId int       `db:"community_id"`
+	CreatedAt   time.Time `db:"created_at"`
+	UpdatedAt   time.Time `db:"updated_at"`
+	User
+}

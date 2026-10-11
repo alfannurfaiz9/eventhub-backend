@@ -190,6 +190,39 @@ func (c *CommunityController) GetCommunityMember(ctx *gin.Context) {
 	})
 }
 
+// GetCommunityDiscussion
+//
+// @Summary			Get community discussion
+// @Description		Get community discussion
+// @Tags			communities
+// @Produce			json
+// @Param        	id   path      int  true  "Community ID"
+// @Router			/communities/{id}/discussions	[get]
+// @Success			200		{object}	dto.Response
+// @Failure			500		{object}	dto.ErrorResponse
+func (c *CommunityController) GetCommunityDiscussion(ctx *gin.Context) {
+	param := ctx.Param("id")
+	id, _ := strconv.Atoi(param)
+
+	result, err := c.cs.GetCommunityDiscussion(ctx, id)
+
+	if err != nil {
+		log.Println(err.Error())
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
+			Success: false,
+			Message: "internal server error",
+		})
+
+		return
+	}
+
+	ctx.JSON(http.StatusOK, dto.Response{
+		Success: true,
+		Data:    result,
+		Message: "Successfully get community discussion",
+	})
+}
+
 // GetPopularCommunity
 //
 // @Summary			Get popular community
