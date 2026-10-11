@@ -22,7 +22,7 @@ type CommunityList struct {
 type CommunityMember struct {
 	Id       int     `db:"id"`
 	FullName string  `db:"full_name"`
-	Job      *string `db:"job"`
+	ImgUrl   *string `db:"img_url"`
 }
 
 type UserCommunity struct {

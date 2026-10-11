@@ -18,8 +18,9 @@ type CommunityList struct {
 }
 
 type CommunityMember struct {
-	FullName string `json:"full_name"`
-	Job      string `json:"job"`
+	Id       int     `json:"id"`
+	FullName string  `json:"full_name"`
+	ImgUrl   *string `json:"img_url"`
 }
 
 type UserCommunity struct {

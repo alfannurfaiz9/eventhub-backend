@@ -140,7 +140,7 @@ func (c *CommunityRepo) GetCommunityEvent(ctx context.Context, id int) ([]model.
 
 func (c *CommunityRepo) GetCommunityMember(ctx context.Context, id int) ([]model.CommunityMember, error) {
 	sql := `
-	SELECT users.full_name
+	SELECT users.id, users.img_url, users.full_name
 	FROM user_community
 	LEFT JOIN users ON users.id = user_community.user_id
 	LEFT JOIN communities ON communities.id = user_community.community_id
@@ -159,6 +159,8 @@ func (c *CommunityRepo) GetCommunityMember(ctx context.Context, id int) ([]model
 		var member model.CommunityMember
 
 		if err := rows.Scan(
+			&member.Id,
+			&member.ImgUrl,
 			&member.FullName,
 		); err != nil {
 			return nil, err

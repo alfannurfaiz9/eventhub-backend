@@ -114,6 +114,8 @@ func (c *CommunityService) GetCommunityMember(ctx context.Context, id int) ([]dt
 	data := make([]dto.CommunityMember, 0, len(result))
 	for _, v := range result {
 		data = append(data, dto.CommunityMember{
+			Id:       v.Id,
+			ImgUrl:   v.ImgUrl,
 			FullName: v.FullName,
 		})
 	}
