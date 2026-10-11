@@ -67,18 +67,19 @@ func (c *CommunityRepo) GetCommunities(ctx context.Context, categories string, p
 
 func (c *CommunityRepo) GetCommunityDetail(ctx context.Context, id int) (model.CommunityList, error) {
 	sql := `
-	SELECT communities.name, communities.img_url,communities.description, STRING_AGG(categories.name, ', '), COUNT(user_community.community_id), COUNT(events.id)
+	SELECT communities.id, communities.name, communities.img_url,communities.description, STRING_AGG(categories.name, ', '), COUNT(user_community.community_id), COUNT(events.id)
 	FROM communities
 	LEFT JOIN community_category ON community_category.community_id = communities.id
 	LEFT JOIN categories ON categories.id = community_category.category_id
 	LEFT JOIN user_community ON user_community.community_id = communities.id
 	LEFT JOIN events ON events.community_id = communities.id
-	WHERE categories.id = $1
-	GROUP BY communities.id, categories.id`
+	WHERE communities.id = $1
+	GROUP BY communities.id`
 	args := []any{id}
 
 	var data model.CommunityList
 	if err := c.db.QueryRow(ctx, sql, args...).Scan(
+		&data.Community.Id,
 		&data.Community.Name,
 		&data.Community.ImgUrl,
 		&data.Community.Description,

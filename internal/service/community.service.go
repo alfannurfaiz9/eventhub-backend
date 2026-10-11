@@ -59,6 +59,7 @@ func (c *CommunityService) GetCommunityDetail(ctx context.Context, id int) (dto.
 	}
 
 	data := dto.CommunityList{
+		Id:            result.Community.Id,
 		Name:          result.Community.Name,
 		Image:         result.Community.ImgUrl,
 		Description:   result.Community.Description,
