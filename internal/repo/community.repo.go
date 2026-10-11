@@ -27,7 +27,7 @@ func (c *CommunityRepo) GetCommunities(ctx context.Context, categories string, p
 	LEFT JOIN user_community ON user_community.community_id = communities.id
 	LEFT JOIN events ON events.community_id = communities.id
 	WHERE categories.name ILIKE $1
-	GROUP BY communities.id, categories.id
+	GROUP BY communities.id
 	LIMIT $2 OFFSET $3`
 	limit := 6
 	offset := limit * (page - 1)
@@ -67,7 +67,7 @@ func (c *CommunityRepo) GetCommunities(ctx context.Context, categories string, p
 
 func (c *CommunityRepo) GetCommunityDetail(ctx context.Context, id int) (model.CommunityList, error) {
 	sql := `
-	SELECT communities.id, communities.name, communities.img_url,communities.description, STRING_AGG(categories.name, ', '), COUNT(user_community.community_id), COUNT(events.id)
+	SELECT communities.id, communities.name, communities.img_url,communities.description, STRING_AGG(categories.name, ', '), COUNT(user_community.community_id), COUNT(DISTINCT events.id)
 	FROM communities
 	LEFT JOIN community_category ON community_category.community_id = communities.id
 	LEFT JOIN categories ON categories.id = community_category.category_id

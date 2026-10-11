@@ -60,7 +60,7 @@ type EventDiscussion struct {
 	Id        int       `json:"id"`
 	UserId    int       `json:"user_id"`
 	FullName  string    `json:"full_name"`
-	ImgUrl    string    `json:"img_url"`
+	ImgUrl    *string   `json:"img_url"`
 	Message   string    `json:"message"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`

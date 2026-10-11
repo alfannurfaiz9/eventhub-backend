@@ -100,7 +100,7 @@ func (e *EventService) GetEventDetail(ctx context.Context, id int) (dto.EventDet
 	for _, v := range allDiscussion {
 		discussions = append(discussions, dto.EventDiscussion{
 			FullName:  v.FullName,
-			ImgUrl:    *v.ImgUrl,
+			ImgUrl:    v.ImgUrl,
 			Message:   v.Message,
 			CreatedAt: v.CreatedAt,
 		})
