@@ -20,7 +20,7 @@ func NewCommunityRepo(db *pgxpool.Pool) *CommunityRepo {
 
 func (c *CommunityRepo) GetCommunities(ctx context.Context, categories string, page int) ([]model.CommunityList, error) {
 	sql := `
-	SELECT communities.id, communities.name, communities.img_url,communities.description, STRING_AGG(categories.name, ', '), COUNT(user_community.community_id), COUNT(events.id)
+	SELECT communities.id, communities.name, communities.img_url,communities.description, STRING_AGG(categories.name, ', '), COUNT(user_community.community_id), COUNT(DISTINCT events.id)
 	FROM communities
 	LEFT JOIN community_category ON community_category.community_id = communities.id
 	LEFT JOIN categories ON categories.id = community_category.category_id
@@ -95,7 +95,7 @@ func (c *CommunityRepo) GetCommunityDetail(ctx context.Context, id int) (model.C
 
 func (c *CommunityRepo) GetCommunityEvent(ctx context.Context, id int) ([]model.EventList, error) {
 	sql := `
-	SELECT events.title, events.img_url, STRING_AGG(categories.name, ', '), events.start_at, locations.name, COUNT(user_event.event_id), events.capacity 
+	SELECT events.id, events.title, events.img_url, STRING_AGG(categories.name, ', '), events.start_at, locations.name, COUNT(user_event.event_id), events.capacity 
 	FROM events 
 	LEFT JOIN locations ON locations.id = events.location_id 
 	LEFT JOIN communities ON communities.id = events.community_id 
@@ -118,6 +118,7 @@ func (c *CommunityRepo) GetCommunityEvent(ctx context.Context, id int) ([]model.
 		var event model.EventList
 
 		if err := rows.Scan(
+			&event.Event.Id,
 			&event.Event.Title,
 			&event.Event.ImgUrl,
 			&event.Category.Name,

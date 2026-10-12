@@ -87,6 +87,7 @@ func (c *CommunityService) GetCommunityEvent(ctx context.Context, id int) ([]dto
 
 	for _, v := range result {
 		data = append(data, dto.EventList{
+			Id:            v.Event.Id,
 			Title:         v.Event.Title,
 			ImgUrl:        v.Event.ImgUrl,
 			Category:      v.Category.Name,

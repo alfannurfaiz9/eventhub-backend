@@ -43,12 +43,14 @@ func (u *UserService) GetMyEvent(ctx context.Context, id int) ([]dto.EventList, 
 
 	for _, v := range result {
 		data = append(data, dto.EventList{
+			Id:            v.Event.Id,
 			Title:         v.Event.Title,
 			ImgUrl:        v.Event.ImgUrl,
+			Category:      v.Category.Name,
 			StartAt:       v.Event.StartAt,
 			Location:      v.Location.Name,
-			Capacity:      v.Event.Capacity,
 			TotalAttendee: v.TotalAttendee,
+			Capacity:      v.Event.Capacity,
 		})
 	}
 
@@ -156,6 +158,7 @@ func (u *UserService) GetMySavedEvent(ctx context.Context, id int) ([]dto.EventL
 			Id:            v.Event.Id,
 			Title:         v.Event.Title,
 			ImgUrl:        v.Event.ImgUrl,
+			Category:      v.Category.Name,
 			StartAt:       v.Event.StartAt,
 			Location:      v.Location.Name,
 			Capacity:      v.Event.Capacity,
