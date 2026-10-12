@@ -369,3 +369,35 @@ func (u *UserController) GetUserInformation(ctx *gin.Context) {
 		Message: "successfully get user information",
 	})
 }
+
+// GetMySavedEvent
+//
+// @Summary			Get user saved event
+// @Description		Get user saved event
+// @Tags			user
+// @Produce			json
+// @Security		BearerToken
+// @Router			/user/saved			[get]
+// @Success			200		{object}	dto.Response
+// @Failure			401		{object}	dto.ErrorResponse
+// @Failure			500		{object}	dto.ErrorResponse
+func (u *UserController) GetMySavedEvent(ctx *gin.Context) {
+	token, _ := ctx.Get("token")
+	claims, _ := token.(pkg.JWTClaims)
+	result, err := u.us.GetMySavedEvent(ctx.Request.Context(), claims.Id)
+
+	if err != nil {
+		log.Println(err.Error())
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
+			Success: false,
+			Message: "internal server error",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, dto.Response{
+		Success: true,
+		Data:    result,
+		Message: "Successfully get my saved event",
+	})
+}

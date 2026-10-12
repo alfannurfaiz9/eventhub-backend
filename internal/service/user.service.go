@@ -146,3 +146,22 @@ func (u *UserService) GetUserInformation(ctx context.Context, id int) (dto.UserI
 
 	return data, err
 }
+
+func (u *UserService) GetMySavedEvent(ctx context.Context, id int) ([]dto.EventList, error) {
+	result, err := u.ur.GetMySavedEvent(ctx, id)
+
+	events := make([]dto.EventList, 0, len(result))
+	for _, v := range result {
+		events = append(events, dto.EventList{
+			Id:            v.Event.Id,
+			Title:         v.Event.Title,
+			ImgUrl:        v.Event.ImgUrl,
+			StartAt:       v.Event.StartAt,
+			Location:      v.Location.Name,
+			Capacity:      v.Event.Capacity,
+			TotalAttendee: v.TotalAttendee,
+		})
+	}
+
+	return events, err
+}
