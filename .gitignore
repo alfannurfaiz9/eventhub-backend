@@ -3,6 +3,8 @@ sql
 tmp
 .air.toml
 .env
+.env.database
+.env.migration
 notes.txt
 makefile
 db
@@ -10,5 +12,3 @@ public
 postman
 .postman
 .dockerignore
-Dockerfile
-docker-compose.yaml
