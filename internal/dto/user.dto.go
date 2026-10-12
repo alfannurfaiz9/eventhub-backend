@@ -17,6 +17,7 @@ type User struct {
 }
 
 type UserProfile struct {
+	Id       int     `json:"id"`
 	FullName string  `json:"full_name"`
 	Email    string  `json:"email"`
 	ImgUrl   *string `json:"img_url"`

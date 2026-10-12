@@ -28,6 +28,7 @@ func initUserRouter(router *gin.Engine, db *pgxpool.Pool, rdb *redis.Client) {
 	r.GET("info", am.UserMiddleware, uc.GetUserInformation)
 	r.GET("profile", am.UserMiddleware, uc.GetUserProfile)
 	r.GET("event", am.UserMiddleware, uc.GetMyEvent)
+	r.GET("community", am.UserMiddleware, uc.GetMyCommunity)
 	r.GET("notification", uc.GetNotification)
 	r.PATCH("edit", uc.ChangeUserProfile)
 	r.PATCH("change-password", uc.ChangeUserPassword)

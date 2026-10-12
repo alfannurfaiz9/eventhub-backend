@@ -19,11 +19,11 @@ func NewUserRepo(db *pgxpool.Pool) *UserRepo {
 }
 
 func (u *UserRepo) GetUserProfile(ctx context.Context, id int) (model.User, error) {
-	sql := "SELECT full_name, email, img_url, address, bio, role from users WHERE id = $1"
+	sql := "SELECT id, full_name, email, img_url, address, bio, role from users WHERE id = $1"
 	args := []any{id}
 
 	var user model.User
-	if err := u.db.QueryRow(ctx, sql, args...).Scan(&user.FullName, &user.Email, &user.ImgUrl, &user.Address, &user.Bio, &user.Role); err != nil {
+	if err := u.db.QueryRow(ctx, sql, args...).Scan(&user.Id, &user.FullName, &user.Email, &user.ImgUrl, &user.Address, &user.Bio, &user.Role); err != nil {
 		return model.User{}, err
 	}
 
@@ -172,4 +172,42 @@ func (u *UserRepo) GetUserInformation(ctx context.Context, id int) (model.User, 
 	}
 
 	return user, nil
+}
+
+func (u *UserRepo) GetMyCommunity(ctx context.Context, id int) ([]model.CommunityList, error) {
+	sql := `
+	SELECT communities.id, communities.name, communities.img_url,communities.description, STRING_AGG(categories.name, ', '), COUNT(user_community.community_id), COUNT(events.id)
+	FROM communities
+	LEFT JOIN user_community ON user_community.community_id = communities.id 
+	LEFT JOIN community_category ON community_category.community_id = communities.id
+	LEFT JOIN categories ON categories.id = community_category.category_id
+	LEFT JOIN events ON events.community_id = communities.id
+	WHERE user_community.user_id = $1
+	GROUP BY communities.id`
+	args := []any{id}
+
+	rows, err := u.db.Query(ctx, sql, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	var communities []model.CommunityList
+	for rows.Next() {
+		var community model.CommunityList
+		if err := rows.Scan(
+			&community.Community.Id,
+			&community.Community.Name,
+			&community.Community.ImgUrl,
+			&community.Community.Description,
+			&community.Category.Name,
+			&community.TotalMember,
+			&community.UpcomingEvent,
+		); err != nil {
+			return nil, err
+		}
+
+		communities = append(communities, community)
+	}
+
+	return communities, nil
 }

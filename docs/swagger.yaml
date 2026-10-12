@@ -879,6 +879,29 @@ paths:
       summary: Change user password
       tags:
       - user
+  /user/community:
+    get:
+      description: Get user community
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerToken: []
+      summary: Get user community
+      tags:
+      - user
   /user/edit:
     patch:
       consumes:
@@ -923,6 +946,29 @@ paths:
       security:
       - BearerToken: []
       summary: Change user profile
+      tags:
+      - user
+  /user/event:
+    get:
+      description: Get user event
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerToken: []
+      summary: Get user event
       tags:
       - user
   /user/info:

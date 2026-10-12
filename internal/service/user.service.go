@@ -24,6 +24,7 @@ func (u *UserService) GetUserProfile(ctx context.Context, id int) (dto.UserProfi
 	result, err := u.ur.GetUserProfile(ctx, id)
 
 	data := dto.UserProfile{
+		Id:       result.Id,
 		FullName: result.FullName,
 		Email:    result.Email,
 		ImgUrl:   result.ImgUrl,
@@ -52,6 +53,28 @@ func (u *UserService) GetMyEvent(ctx context.Context, id int) ([]dto.EventList, 
 	}
 
 	return data, err
+}
+
+func (u *UserService) GetMyCommunity(ctx context.Context, id int) ([]dto.CommunityList, error) {
+	result, err := u.ur.GetMyCommunity(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	communities := make([]dto.CommunityList, 0, len(result))
+	for _, v := range result {
+		communities = append(communities, dto.CommunityList{
+			Id:            v.Community.Id,
+			Name:          v.Community.Name,
+			Image:         v.Community.ImgUrl,
+			Description:   v.Community.Description,
+			Category:      v.Category.Name,
+			TotalMember:   v.TotalMember,
+			UpcomingEvent: v.UpcomingEvent,
+		})
+	}
+
+	return communities, err
 }
 
 func (u *UserService) GetNotification(ctx context.Context, id int) ([]dto.Notification, error) {

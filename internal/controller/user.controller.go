@@ -60,6 +60,17 @@ func (u *UserController) GetUserProfile(ctx *gin.Context) {
 	})
 }
 
+// GetMyEvent
+//
+// @Summary			Get user event
+// @Description		Get user event
+// @Tags			user
+// @Produce			json
+// @Security		BearerToken
+// @Router			/user/event			[get]
+// @Success			200		{object}	dto.Response
+// @Failure			401		{object}	dto.ErrorResponse
+// @Failure			500		{object}	dto.ErrorResponse
 func (u *UserController) GetMyEvent(ctx *gin.Context) {
 	token, _ := ctx.Get("token")
 	claims, _ := token.(pkg.JWTClaims)
@@ -231,6 +242,38 @@ func (u *UserController) ChangeUserProfile(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, dto.Response{
 		Success: true,
 		Message: "profile updated successfully",
+	})
+}
+
+// GetMyCommunity
+//
+// @Summary			Get user community
+// @Description		Get user community
+// @Tags			user
+// @Produce			json
+// @Security		BearerToken
+// @Router			/user/community		[get]
+// @Success			200		{object}	dto.Response
+// @Failure			401		{object}	dto.ErrorResponse
+// @Failure			500		{object}	dto.ErrorResponse
+func (u *UserController) GetMyCommunity(ctx *gin.Context) {
+	token, _ := ctx.Get("token")
+	claims, _ := token.(pkg.JWTClaims)
+
+	result, err := u.us.GetMyCommunity(ctx.Request.Context(), claims.Id)
+	if err != nil {
+		log.Println(err.Error())
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
+			Success: false,
+			Message: "internal server error",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, dto.Response{
+		Success: true,
+		Data:    result,
+		Message: "successfully get my event",
 	})
 }
 
