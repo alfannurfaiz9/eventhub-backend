@@ -261,6 +261,24 @@ func (e *EventRepo) SaveEvent(ctx context.Context, userId, eventId int, db DBTX)
 	return nil
 }
 
+func (e *EventRepo) UnsaveEvent(ctx context.Context, userId int, eventId int, db DBTX) error {
+	sql := "DELETE FROM user_saved_event WHERE user_id = $1 AND event_id = $2"
+	args := []any{userId, eventId}
+
+	cmd, err := db.Exec(ctx, sql, args...)
+
+	if err != nil {
+		return err
+	}
+
+	if cmd.RowsAffected() == 0 {
+		return errors.New("no row affected")
+
+	}
+
+	return nil
+}
+
 func (e *EventRepo) InsertSpeakers(ctx context.Context, body model.Speaker, db DBTX) (int, error) {
 	sql := `
 	INSERT INTO speakers(name, img_url, position, company)

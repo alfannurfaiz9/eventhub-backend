@@ -273,6 +273,41 @@ func (e *EventController) SaveEvent(ctx *gin.Context) {
 	})
 }
 
+// UnsaveEvent
+//
+// @Summary			Unsave event
+// @Description		Unsave specified event
+// @Tags			events
+// @Produce			json
+// @Router			/events/{id}/unsave		[delete]
+// @Param        	id   path      int  true  "Event ID"
+// @Security		BearerToken
+// @Success			200		{object}	dto.Response
+// @Failure			401		{object}	dto.ErrorResponse
+// @Failure			406		{object}	dto.ErrorResponse
+// @Failure			500		{object}	dto.ErrorResponse
+func (e *EventController) UnsaveEvent(ctx *gin.Context) {
+	token, _ := ctx.Get("token")
+	claims, _ := token.(pkg.JWTClaims)
+	eventId := ctx.Param("event_id")
+	eIdInt, _ := strconv.Atoi(eventId)
+
+	if err := e.es.UnsaveEvent(ctx.Request.Context(), claims.Id, eIdInt); err != nil {
+		log.Println(err.Error())
+		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
+			Success: false,
+			Message: "internal server error",
+		})
+
+		return
+	}
+
+	ctx.JSON(http.StatusOK, dto.Response{
+		Success: true,
+		Message: "succesfully unsave event",
+	})
+}
+
 // CreateEvent
 //
 // @Summary			Create new event

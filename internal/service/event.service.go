@@ -169,6 +169,14 @@ func (e *EventService) SaveEvent(ctx context.Context, userId, eventId int) error
 	return e.er.SaveEvent(ctx, userId, eventId, e.db)
 }
 
+func (e *EventService) UnsaveEvent(ctx context.Context, user_id int, eventId int) error {
+	if err := e.er.UnsaveEvent(ctx, user_id, eventId, e.db); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (e *EventService) CreateEvent(ctx context.Context, body dto.CreateEvent, organizerId int, eventImg string) error {
 	tx, err := e.db.Begin(ctx)
 	if err != nil {

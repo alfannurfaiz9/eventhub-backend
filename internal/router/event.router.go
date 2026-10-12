@@ -28,6 +28,7 @@ func initEventRouter(router *gin.Engine, db *pgxpool.Pool, rdb *redis.Client) {
 	r.POST(":event_id/join", am.CheckToken, am.UserMiddleware, ec.JoinEvent)
 	r.DELETE(":event_id/leave", am.CheckToken, am.UserMiddleware, ec.LeaveEvent)
 	r.POST(":event_id/save", am.CheckToken, am.UserMiddleware, ec.SaveEvent)
+	r.DELETE(":event_id/unsave", am.CheckToken, am.UserMiddleware, ec.UnsaveEvent)
 
 	r.POST("create", am.CheckToken, am.OrganizerMiddleware, ec.CreateEvent)
 }
