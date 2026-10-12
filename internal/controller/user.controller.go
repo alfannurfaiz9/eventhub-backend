@@ -251,6 +251,7 @@ func (u *UserController) ChangeUserPassword(ctx *gin.Context) {
 	var body dto.ChangePassword
 
 	if err := ctx.ShouldBindWith(&body, binding.JSON); err != nil {
+		log.Println(err.Error())
 		ctx.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Success: false,
 			Message: "internal server error",
@@ -263,6 +264,7 @@ func (u *UserController) ChangeUserPassword(ctx *gin.Context) {
 	claims, _ := token.(pkg.JWTClaims)
 
 	if err := u.us.ChangeUserPassword(ctx.Request.Context(), body, claims.Id); err != nil {
+		log.Println(err.Error())
 		if errors.Is(err, custom_error.ChangeUserrInvalidLength) {
 			ctx.JSON(http.StatusNotAcceptable, dto.ErrorResponse{
 				Success: false,
